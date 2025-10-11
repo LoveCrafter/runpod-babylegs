@@ -1,0 +1,6 @@
+models/
+vesper_env/
+*.gguf
+__pycache__/
+*.pyc
+llama.cpp/
