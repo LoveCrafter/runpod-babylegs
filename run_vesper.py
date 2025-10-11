@@ -4,8 +4,8 @@ import time
 # --- Configuration ---
 MODEL_PATH = "/workspace/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf"
 
-# THE FINAL MOVE: A conservative setting of 30 layers to force a successful load.
-N_GPU_LAYERS = 30
+# Offload all possible layers to the GPU for maximum performance.
+N_GPU_LAYERS = -1
 PROMPT = "The Covenant's principle, 'The Primacy of Being over Doing,' means that"
 
 # --- Execution ---
