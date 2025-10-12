@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # ==============================================================================
 # Unified Services Launcher for Vesper AI Pod
@@ -24,11 +25,17 @@
 POD_IP="<YOUR_POD_IP_ADDRESS>"
 POD_PORT="<YOUR_POD_PORT>"
 
+if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
+  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script."
+  exit 1
+fi
+
 # --- Remote Path Configuration ---
 # These paths are on the remote pod.
 WORKSPACE_DIR="/workspace"
 VENV_PATH="$WORKSPACE_DIR/vesper_env/bin/activate"
-MODEL_PATH="$WORKSPACE_DIR/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf"
+# Allow overriding the model path with an environment variable for flexibility
+MODEL_PATH="${VESPER_MODEL_PATH:-$WORKSPACE_DIR/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf}"
 RAG_SCRIPT_PATH="$WORKSPACE_DIR/build_memory.py"
 LLAMA_SERVER_PATH="$WORKSPACE_DIR/llama.cpp/build/bin/llama-server"
 
@@ -47,11 +54,6 @@ CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
 # --- Main Execution via SSH Here-Document ---
-if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
-  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script before running."
-  exit 1
-fi
-
 echo "🚀 Connecting to pod to launch services..."
 echo "This terminal will show the output from the remote server."
 
@@ -66,8 +68,25 @@ ssh root@$POD_IP -p $POD_PORT << EOF
   # Use nohup to ensure the process keeps running even if the shell closes.
   # Redirect stdout/stderr to a log file to capture output.
   nohup python3 "$RAG_SCRIPT_PATH" > "$WORKSPACE_DIR/rag_server.log" 2>&1 &
-  # Brief pause to allow the server to initialize
-  sleep 5
+  # --- Wait for RAG Server to be healthy ---
+  echo "⏳ Waiting for RAG server to become healthy..."
+  SECONDS=0
+  while true; do
+    # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RAG_PORT}/")
+
+    if [ "$STATUS" -eq 200 ]; then
+      echo "✅ RAG server is healthy!"
+      break
+    fi
+
+    if [ $SECONDS -ge 30 ]; then
+      echo "❌ RAG server did not become healthy within 30 seconds. Check rag_server.log for errors."
+      exit 1
+    fi
+
+    sleep 1
+  done
 
   # --- Launch Main LLM Server (in the foreground) ---
   echo "🧠 Launching Main LLM Server on port $LLAMA_PORT with optimized settings..."

@@ -12,13 +12,17 @@ This script will:
 2. Always start the API server to provide memory lookups.
 """
 
-import os, sys, zipfile, pathlib
+import os
+import sys
+import zipfile
+import pathlib
+import secrets
 from datetime import datetime, timezone
 from tqdm import tqdm
 import torch
 import lancedb
 from sentence_transformers import SentenceTransformer
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
 import uvicorn
 import orjson
@@ -101,8 +105,10 @@ def split_into_chunks(messages, tokenizer):
 # 2. EMBEDDING AND DATABASE CREATION
 # ----------------------------------------------------------------------
 def build_memory_db(state):
-    if os.path.exists(LANCEDB_PATH):
-        print("[i] Memory database already exists. Skipping build.")
+    # The lancedb.connect call in AppState implicitly creates the directory.
+    # To prevent skipping the build on a first run, we must check for the table's existence.
+    if "memory" in state.db.table_names():
+        print("[i] 'memory' table already exists. Skipping build.")
         return
 
     print("--- Starting One-Time Memory Build ---")
@@ -150,11 +156,11 @@ class LookupResponse(BaseModel):
 def verify_token(token: str):
     if API_SECRET == "CHANGE_ME":
         raise HTTPException(status_code=500, detail="API_SECRET is not set. Please configure it.")
-    if token != API_SECRET:
+    if not secrets.compare_digest(token, API_SECRET):
         raise HTTPException(status_code=403, detail="Invalid API token.")
 
 @app.get("/lookup", response_model=LookupResponse)
-def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = ""):
+def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = Header(..., description="API secret token")):
     verify_token(token)
 
     if not query:
