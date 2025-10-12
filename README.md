@@ -17,6 +17,7 @@ These instructions will guide you through the process of setting up and launchin
 3.  **Setup Python Environment:** Create and activate a virtual environment, and install the required packages:
     ```bash
     python3 -m venv vesper_env
+    # On Windows, use: vesper_env\Scripts\activate
     source vesper_env/bin/activate
     pip install -r requirements.txt
     ```
