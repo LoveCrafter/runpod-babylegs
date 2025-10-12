@@ -158,7 +158,7 @@ def verify_token(token: str):
         raise HTTPException(status_code=403, detail="Invalid API token.")
 
 @app.get("/lookup", response_model=LookupResponse)
-def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = ""):
+def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = Header(..., description="API secret token")):
     verify_token(token)
 
     if not query:
