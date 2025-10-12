@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # ==============================================================================
 # Unified Services Launcher for Vesper AI Pod
