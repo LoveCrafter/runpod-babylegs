@@ -39,7 +39,7 @@ RAG_SCRIPT_PATH="$WORKSPACE_DIR/build_memory.py"
 LLAMA_SERVER_PATH="$WORKSPACE_DIR/llama.cpp/build/bin/llama-server"
 
 # --- Service Port Configuration ---
-# These ports are on the remote pod.
+# These paths are on the remote pod.
 RAG_PORT="5000"
 LLAMA_PORT="8080"
 

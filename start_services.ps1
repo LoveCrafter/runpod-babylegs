@@ -18,6 +18,11 @@
 $PodIp = "<YOUR_POD_IP_ADDRESS>"
 $PodPort = "<YOUR_POD_PORT>"
 
+if ($PodIp -eq "<YOUR_POD_IP_ADDRESS>" -or $PodPort -eq "<YOUR_POD_PORT>") {
+  Write-Host "❌ Error: Please replace the placeholder values for PodIp and PodPort in the script before running." -ForegroundColor Red
+  exit 1
+}
+
 # --- Remote Path Configuration ---
 $WorkspaceDir = "/workspace"
 $VenvPath = "$WorkspaceDir/vesper_env/bin/activate"
@@ -40,24 +45,21 @@ Write-Host "This terminal will show the output from the remote server."
 
 # Define the block of commands to be executed on the remote server
 $SshCommands = @"
-# Activate Python environment
-Write-Host "✅ Connected to pod. Activating Python environment..."
-source `"$VenvPath`"
+echo "✅ Connected to pod. Activating Python environment..."
+source "$VenvPath"
 
-# Launch RAG Memory Server (in the background)
-Write-Host "🧠 Starting RAG Memory Server on port $RagPort..."
-nohup python3 `"$RagScriptPath`" > `"$WorkspaceDir/rag_server.log`" 2>&1 &
-Start-Sleep -Seconds 5
+echo "🧠 Starting RAG Memory Server on port $RagPort..."
+nohup python3 "$RagScriptPath" > "$WorkspaceDir/rag_server.log" 2>&1 &
+sleep 5
 
-# Launch Main LLM Server (in the foreground)
-Write-Host "🧠 Launching Main LLM Server on port $LlamaPort with optimized settings..."
-`"$LlamaServerPath`" --model `"$ModelPath`" --n-gpu-layers $GpuLayers --ctx-size $ContextSize --host 0.0.0.0 --port $LlamaPort
+echo "🧠 Launching Main LLM Server on port $LlamaPort with optimized settings..."
+"$LlamaServerPath" --model "$ModelPath" --n-gpu-layers $GpuLayers --ctx-size $ContextSize --host 0.0.0.0 --port $LlamaPort
 
-Write-Host "✅ Server processes have been launched on the pod."
+echo "✅ Server processes have been launched on the pod."
 "@
 
-# Execute the commands on the remote pod via SSH
-ssh "root@$PodIp" -p $PodPort -t $SshCommands
+# Execute the commands on the remote pod by piping the command block to the SSH client
+$SshCommands | ssh "root@$PodIp" -p $PodPort
 
 
 # --- Final Instructions for User ---
