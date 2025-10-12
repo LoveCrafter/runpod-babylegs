@@ -8,7 +8,7 @@ This document provides special instructions for AI agents working with this repo
 
 **Solution:** Before starting any new task, especially after the user has merged a branch, you **must** sync your local `master` branch with the remote.
 
-A simple `git pull` is blocked in this environment. Use the following two-step, non-interactive command sequence to force your local `master` branch to exactly match the remote `master`:
+A simple `git pull` is blocked in this environment. Use the following command sequence to force your local `master` branch to exactly match the remote `master`:
 
 ```bash
 git checkout master
