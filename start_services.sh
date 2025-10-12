@@ -39,8 +39,10 @@ LLAMA_PORT="8080"
 
 # --- LLM Parameter Configuration (Optimized) ---
 # These are the high-performance settings we've tuned.
-# Using Flash Attention to reduce VRAM from the KV cache, allowing all layers to be offloaded.
-GPU_LAYERS=-1
+# NOTE: The model (81.8GB) is slightly larger than the H100's VRAM (80GB).
+# Offloading 33 of 36 layers to the GPU provides the best performance while
+# leaving a buffer to prevent "out of memory" errors.
+GPU_LAYERS=33
 CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
@@ -68,7 +70,6 @@ ssh root@$POD_IP -p $POD_PORT << EOF
     --model "$MODEL_PATH" \
     --n-gpu-layers $GPU_LAYERS \
     --ctx-size $CONTEXT_SIZE \
-    --flash-attn \
     --host 0.0.0.0 \
     --port $LLAMA_PORT
 
