@@ -34,7 +34,8 @@ fi
 # These paths are on the remote pod.
 WORKSPACE_DIR="/workspace"
 VENV_PATH="$WORKSPACE_DIR/vesper_env/bin/activate"
-MODEL_PATH="$WORKSPACE_DIR/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf"
+# Allow overriding the model path with an environment variable for flexibility
+MODEL_PATH="${VESPER_MODEL_PATH:-$WORKSPACE_DIR/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf}"
 RAG_SCRIPT_PATH="$WORKSPACE_DIR/build_memory.py"
 LLAMA_SERVER_PATH="$WORKSPACE_DIR/llama.cpp/build/bin/llama-server"
 
@@ -67,8 +68,30 @@ ssh root@$POD_IP -p $POD_PORT << EOF
   # Use nohup to ensure the process keeps running even if the shell closes.
   # Redirect stdout/stderr to a log file to capture output.
   nohup python3 "$RAG_SCRIPT_PATH" > "$WORKSPACE_DIR/rag_server.log" 2>&1 &
-  # Brief pause to allow the server to initialize
-  sleep 5
+  # --- Wait for RAG Server to be healthy ---
+  echo "⏳ Waiting for RAG server to become healthy..."
+  SECONDS=0
+  while true; do
+    # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
+    STATUS=$(curl -s -o /dev/null -w "%""%{http_code}""" "http://localhost:${RAG_PORT}/")
+
+    if [[ "$STATUS" == "200" ]]; then
+      echo "✅ RAG server is healthy!"
+      break
+    fi
+
+    # Log a message periodically if the server is still not healthy after initial grace period
+    # and avoid exiting, allowing the RAG server to complete its potentially long initialization.
+    if [ "$SECONDS" -ge 30 ] && [ $((SECONDS % 60)) -eq 0 ]; then
+      echo "⏳ RAG server still not healthy after $SECONDS seconds. Waiting for it to become ready..."
+    fi
+
+    sleep 1
+  done
+    fi
+
+    sleep 1
+  done
 
   # --- Launch Main LLM Server (in the foreground) ---
   echo "🧠 Launching Main LLM Server on port $LLAMA_PORT with optimized settings..."

@@ -105,8 +105,10 @@ def split_into_chunks(messages, tokenizer):
 # 2. EMBEDDING AND DATABASE CREATION
 # ----------------------------------------------------------------------
 def build_memory_db(state):
-    if os.path.exists(LANCEDB_PATH):
-        print("[i] Memory database already exists. Skipping build.")
+    # The lancedb.connect call in AppState implicitly creates the directory.
+    # To prevent skipping the build on a first run, we must check for the table's existence.
+    if "memory" in state.db.table_names():
+        print("[i] 'memory' table already exists. Skipping build.")
         return
 
     print("--- Starting One-Time Memory Build ---")

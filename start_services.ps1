@@ -26,7 +26,9 @@ if ($PodIp -eq "<YOUR_POD_IP_ADDRESS>" -or $PodPort -eq "<YOUR_POD_PORT>") {
 # --- Remote Path Configuration ---
 $WorkspaceDir = "/workspace"
 $VenvPath = "$WorkspaceDir/vesper_env/bin/activate"
-$ModelPath = "$WorkspaceDir/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf"
+# Allow overriding the model path with an environment variable for flexibility
+$DefaultModelPath = "$WorkspaceDir/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf"
+$ModelPath = if ($env:VESPER_MODEL_PATH) { $env:VESPER_MODEL_PATH } else { $DefaultModelPath }
 $RagScriptPath = "$WorkspaceDir/build_memory.py"
 $LlamaServerPath = "$WorkspaceDir/llama.cpp/build/bin/llama-server"
 
@@ -50,7 +52,25 @@ source "$VenvPath"
 
 echo "🧠 Starting RAG Memory Server on port $RagPort..."
 nohup python3 "$RagScriptPath" > "$WorkspaceDir/rag_server.log" 2>&1 &
-sleep 5
+# --- Wait for RAG Server to be healthy ---
+echo "⏳ Waiting for RAG server to become healthy..."
+SECONDS=0
+while true; do
+  # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RagPort}/")
+
+  if [ "$STATUS" -eq 200 ]; then
+    echo "✅ RAG server is healthy!"
+    break
+  fi
+
+  if [ $SECONDS -ge 30 ]; then
+    echo "❌ RAG server did not become healthy within 30 seconds. Check rag_server.log for errors."
+    exit 1
+  fi
+
+  sleep 1
+done
 
 echo "🧠 Launching Main LLM Server on port $LlamaPort with optimized settings..."
 "$LlamaServerPath" --model "$ModelPath" --n-gpu-layers $GpuLayers --ctx-size $ContextSize --host 0.0.0.0 --port $LlamaPort
