@@ -73,16 +73,21 @@ ssh root@$POD_IP -p $POD_PORT << EOF
   SECONDS=0
   while true; do
     # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
-    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RAG_PORT}/")
+    STATUS=$(curl -s -o /dev/null -w "%""%{http_code}""" "http://localhost:${RAG_PORT}/")
 
     if [[ "$STATUS" == "200" ]]; then
       echo "✅ RAG server is healthy!"
       break
     fi
 
-    if [ $SECONDS -ge 30 ]; then
-      echo "❌ RAG server did not become healthy within 30 seconds. Check rag_server.log for errors."
-      exit 1
+    # Log a message periodically if the server is still not healthy after initial grace period
+    # and avoid exiting, allowing the RAG server to complete its potentially long initialization.
+    if [ "$SECONDS" -ge 30 ] && [ $((SECONDS % 60)) -eq 0 ]; then
+      echo "⏳ RAG server still not healthy after $SECONDS seconds. Waiting for it to become ready..."
+    fi
+
+    sleep 1
+  done
     fi
 
     sleep 1
