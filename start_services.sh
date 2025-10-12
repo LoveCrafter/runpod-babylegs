@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # ==============================================================================
 # Unified Services Launcher for Vesper AI Pod
@@ -24,6 +25,11 @@
 POD_IP="<YOUR_POD_IP_ADDRESS>"
 POD_PORT="<YOUR_POD_PORT>"
 
+if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
+  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script."
+  exit 1
+fi
+
 # --- Remote Path Configuration ---
 # These paths are on the remote pod.
 WORKSPACE_DIR="/workspace"
@@ -47,11 +53,6 @@ CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
 # --- Main Execution via SSH Here-Document ---
-if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
-  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script before running."
-  exit 1
-fi
-
 echo "🚀 Connecting to pod to launch services..."
 echo "This terminal will show the output from the remote server."
 

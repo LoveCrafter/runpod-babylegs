@@ -12,13 +12,17 @@ This script will:
 2. Always start the API server to provide memory lookups.
 """
 
-import os, sys, zipfile, pathlib
+import os
+import sys
+import zipfile
+import pathlib
+import secrets
 from datetime import datetime, timezone
 from tqdm import tqdm
 import torch
 import lancedb
 from sentence_transformers import SentenceTransformer
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel
 import uvicorn
 import orjson
@@ -150,11 +154,11 @@ class LookupResponse(BaseModel):
 def verify_token(token: str):
     if API_SECRET == "CHANGE_ME":
         raise HTTPException(status_code=500, detail="API_SECRET is not set. Please configure it.")
-    if token != API_SECRET:
+    if not secrets.compare_digest(token, API_SECRET):
         raise HTTPException(status_code=403, detail="Invalid API token.")
 
 @app.get("/lookup", response_model=LookupResponse)
-def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = ""):
+def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = Header(..., description="API secret token")):
     verify_token(token)
 
     if not query:
