@@ -43,6 +43,7 @@ LLAMA_PORT="8080"
 # Offloading 33 of 36 layers to the GPU provides the best performance while
 # leaving a buffer to prevent "out of memory" errors.
 GPU_LAYERS=33
+GPU_LAYERS=-1    # -1 offloads all possible layers to the GPU
 CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
