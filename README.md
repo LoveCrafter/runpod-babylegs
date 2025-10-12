@@ -1,22 +1,48 @@
-# My AI Model Project
+# AI Model Inference Project
 
-This project runs an open-source model using a custom inference script.
+This project runs a high-performance, open-source GGUF model and a supporting RAG memory server.
 
-## Setup Instructions
+## Quick Start: Initializing the Pod
 
-1.  **Clone this repository.**
-2.  **Download the Model:** Download the 82 GB GGUF model file and place it in a directory named `models/`.
-3.  **Setup Python Environment:** Create and activate a virtual environment.
+The entire environment, including the main model and the RAG memory server, is managed by a single, unified startup script. Please follow the instructions for your operating system.
+
+### Instructions for macOS and Linux
+
+1.  **Configure the Launcher:**
+    Open the `start_services.sh` script and replace the placeholder values for `POD_IP` and `POD_PORT` with your RunPod instance's details.
+
+2.  **Make the Script Executable:**
+    Open your terminal and run:
     ```bash
-    python3 -m venv vesper_env
-    source vesper_env/bin/activate
+    chmod +x start_services.sh
     ```
-4.  **Install Dependencies:** Install all required Python packages.
+
+3.  **Launch Everything:**
+    Execute the script from your terminal:
     ```bash
-    pip install -r requirements.txt
+    ./start_services.sh
     ```
-5.  **Setup llama.cpp:** Initialize and compile the `llama.cpp` submodule.
-    ```bash
-    git submodule update --init --recursive
-    cd llama.cpp && make && cd ..
+
+### Instructions for Windows (PowerShell)
+
+1.  **Configure the Launcher:**
+    Open the `start_services.ps1` script in a text editor and replace the placeholder values for `$PodIp` and `$PodPort` with your RunPod instance's details.
+
+2.  **Launch Everything:**
+    Open PowerShell, navigate to the project directory, and run the script:
+    ```powershell
+    .\start_services.ps1
     ```
+
+After running the script, it will guide you through the final steps for port-forwarding to access the chat interface in your browser.
+
+---
+
+## Advanced Information
+
+### Included Scripts
+
+*   `start_services.sh`: The main entry point for macOS and Linux users.
+*   `start_services.ps1`: The main entry point for Windows users.
+*   `run_vesper.py`: A flexible Python script for performing single-shot inference tests.
+*   `build_memory.py`: The script for the RAG memory server (launched automatically).
