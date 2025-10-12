@@ -150,7 +150,7 @@ class LookupResponse(BaseModel):
 def verify_token(token: str):
     if API_SECRET == "CHANGE_ME":
         raise HTTPException(status_code=500, detail="API_SECRET is not set. Please configure it.")
-    if token != API_SECRET:
+    if not secrets.compare_digest(token, API_SECRET):
         raise HTTPException(status_code=403, detail="Invalid API token.")
 
 @app.get("/lookup", response_model=LookupResponse)
