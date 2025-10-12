@@ -40,14 +40,18 @@ LLAMA_PORT="8080"
 # --- LLM Parameter Configuration (Optimized) ---
 # These are the high-performance settings we've tuned.
 # NOTE: The model (81.8GB) is slightly larger than the H100's VRAM (80GB).
-# Offloading 33 of 36 layers to the GPU provides the best performance while
+# Offloading 34 of 37 layers to the GPU provides the best performance while
 # leaving a buffer to prevent "out of memory" errors.
-GPU_LAYERS=33
-GPU_LAYERS=-1    # -1 offloads all possible layers to the GPU
+GPU_LAYERS=34
 CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
 # --- Main Execution via SSH Here-Document ---
+if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
+  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script before running."
+  exit 1
+fi
+
 echo "🚀 Connecting to pod to launch services..."
 echo "This terminal will show the output from the remote server."
 
