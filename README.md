@@ -40,9 +40,11 @@ After running the script, it will guide you through the final steps for port-for
 
 ## Advanced Information
 
-### Included Scripts
+### Core Components
 
-*   `start_services.sh`: The main entry point for macOS and Linux users.
-*   `start_services.ps1`: The main entry point for Windows users.
-*   `run_vesper.py`: A flexible Python script for performing single-shot inference tests.
-*   `build_memory.py`: The script for the RAG memory server (launched automatically).
+*   **`start_services.sh` / `start_services.ps1`**: The primary entry point for launching the entire environment. This script starts the main, high-performance C++ model server (`llama-server`) and the RAG memory server. This is the recommended way to run the project.
+*   **`build_memory.py`**: The script for the RAG memory server. It's launched automatically by the `start_services` scripts and does not need to be run manually.
+
+### Utility Scripts
+
+*   **`run_vesper.py`**: A flexible Python command-line utility for performing single-shot inference tests. This is useful for quick, one-off model checks but is **not** part of the main persistent server environment.
