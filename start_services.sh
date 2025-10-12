@@ -39,9 +39,8 @@ LLAMA_PORT="8080"
 
 # --- LLM Parameter Configuration (Optimized) ---
 # These are the high-performance settings we've tuned.
-# NOTE: This model has 36 layers. Setting to 33 leaves a buffer in VRAM
-# to prevent "out of memory" errors, while maximizing performance.
-GPU_LAYERS=33
+# Using Flash Attention to reduce VRAM from the KV cache, allowing all layers to be offloaded.
+GPU_LAYERS=-1
 CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
@@ -69,6 +68,7 @@ ssh root@$POD_IP -p $POD_PORT << EOF
     --model "$MODEL_PATH" \
     --n-gpu-layers $GPU_LAYERS \
     --ctx-size $CONTEXT_SIZE \
+    --flash-attn \
     --host 0.0.0.0 \
     --port $LLAMA_PORT
 
