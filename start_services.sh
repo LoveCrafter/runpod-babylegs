@@ -75,7 +75,7 @@ ssh root@$POD_IP -p $POD_PORT << EOF
     # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
     STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RAG_PORT}/")
 
-    if [ "$STATUS" -eq 200 ]; then
+    if [[ "$STATUS" == "200" ]]; then
       echo "✅ RAG server is healthy!"
       break
     fi
