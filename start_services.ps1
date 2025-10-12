@@ -91,7 +91,7 @@ Write-Host "➡️  NEXT STEP: Open a NEW PowerShell terminal and run this comma
 Write-Host "   access the main LLM server:"
 Write-Host "------------------------------------------------------------------"
 Write-Host ""
-Write-Host "ssh -L $LlamaPort`:localhost:$LlamaPort root@$PodIp -p $PodPort"
+Write-Host "ssh -L $LlamaPort:localhost:$LlamaPort root@$PodIp -p $PodPort"
 Write-Host ""
 Write-Host "You can then interact with the model at http://localhost:$LlamaPort"
 Write-Host ""
