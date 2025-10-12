@@ -25,6 +25,11 @@ set -e
 POD_IP="<YOUR_POD_IP_ADDRESS>"
 POD_PORT="<YOUR_POD_PORT>"
 
+if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
+  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script."
+  exit 1
+fi
+
 # --- Remote Path Configuration ---
 # These paths are on the remote pod.
 WORKSPACE_DIR="/workspace"
