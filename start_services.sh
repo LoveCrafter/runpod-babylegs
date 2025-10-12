@@ -49,7 +49,7 @@ LLAMA_PORT="8080"
 # NOTE: The model (81.8GB) is slightly larger than the H100's VRAM (80GB).
 # Offloading 34 of 37 layers to the GPU provides the best performance while
 # leaving a buffer to prevent "out of memory" errors.
-GPU_LAYERS=34
+GPU_LAYERS=-1
 CONTEXT_SIZE=1024 # Optimized for reduced VRAM usage
 
 
