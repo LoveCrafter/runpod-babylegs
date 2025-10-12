@@ -4,3 +4,6 @@ vesper_env/
 __pycache__/
 *.pyc
 llama.cpp/
+.cache/
+.ipynb_checkpoints/
+*.swp
