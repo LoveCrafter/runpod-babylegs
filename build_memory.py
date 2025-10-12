@@ -12,7 +12,11 @@ This script will:
 2. Always start the API server to provide memory lookups.
 """
 
-import os, sys, zipfile, pathlib
+import os
+import sys
+import zipfile
+import pathlib
+import secrets
 from datetime import datetime, timezone
 from tqdm import tqdm
 import torch
