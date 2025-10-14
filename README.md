@@ -1,48 +1,45 @@
 # AI Model Inference Project
 
-This project runs a high-performance, open-source GGUF model and a supporting RAG memory server.
+## Project Overview
+
+This project provides a comprehensive environment for running a high-performance, open-source GGUF model and a supporting RAG memory server. It is designed to be run on a remote RunPod instance and managed from your local machine using a single "launch button" command.
 
 ## Quick Start: Initializing the Pod
 
-The entire environment, including the main model and the RAG memory server, is managed by a single, unified startup script. Please follow the instructions for your operating system.
+### Prerequisites
 
-### Instructions for macOS and Linux
-
-1.  **Configure the Launcher:**
-    Open the `start_services.sh` script and replace the placeholder values for `POD_IP` and `POD_PORT` with your RunPod instance's details.
-
-2.  **Make the Script Executable:**
-    Open your terminal and run:
+1.  **Clone this repository** to your local machine.
+2.  **Download the Model:** Place the GGUF model file(s) in the `models/` directory.
+3.  **Setup Python Environment:** Create and activate a virtual environment, and install the required packages:
     ```bash
-    chmod +x start_services.sh
+    python3 -m venv vesper_env
+    source vesper_env/bin/activate
+    pip install -r requirements.txt
     ```
 
-3.  **Launch Everything:**
-    Execute the script from your terminal:
-    ```bash
-    ./start_services.sh
-    ```
+### Launching the Services
 
-### Instructions for Windows (PowerShell)
+The startup scripts now accept your Pod's IP address and SSH port directly as command-line arguments, removing the need to manually edit any files.
 
-1.  **Configure the Launcher:**
-    Open the `start_services.ps1` script in a text editor and replace the placeholder values for `$PodIp` and `$PodPort` with your RunPod instance's details.
+#### For macOS & Linux Users
 
-2.  **Launch Everything:**
-    Open PowerShell, navigate to the project directory, and run the script:
+Open your terminal, navigate to the project directory, and run the following command, replacing the placeholders with your pod's details:
+
+```bash
+./start_services.sh <YOUR_POD_IP> <YOUR_POD_PORT>
+```
+*Example:* `./start_services.sh 216.81.245.97 11114`
+
+#### For Windows Users
+
+1.  **Set Execution Policy (One-Time Setup):** If you have never run a PowerShell script on your system before, you may need to enable it. Open a PowerShell terminal **as Administrator** and run this command once:
     ```powershell
-    .\start_services.ps1
+    Set-ExecutionPolicy RemoteSigned
     ```
+2.  **Run the Script:** Open a regular (non-admin) PowerShell terminal, navigate to the project directory, and run the following command, replacing the placeholders with your pod's details:
+    ```powershell
+    .\start_services.ps1 -PodIp <YOUR_POD_IP> -PodPort <YOUR_POD_PORT>
+    ```
+    *Example:* `.\start_services.ps1 -PodIp 216.81.245.97 -PodPort 11114`
 
-After running the script, it will guide you through the final steps for port-forwarding to access the chat interface in your browser.
-
----
-
-## Advanced Information
-
-### Included Scripts
-
-*   `start_services.sh`: The main entry point for macOS and Linux users.
-*   `start_services.ps1`: The main entry point for Windows users.
-*   `run_vesper.py`: A flexible Python script for performing single-shot inference tests.
-*   `build_memory.py`: The script for the RAG memory server (launched automatically).
+After running the script, it will compile the `llama-server` if needed, start all services on the remote pod, and provide you with the final `ssh` commands to paste into a new terminal to access the model.
