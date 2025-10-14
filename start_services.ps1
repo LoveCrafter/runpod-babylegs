@@ -64,7 +64,7 @@ echo "⏳ Waiting for RAG server to become healthy..."
 SECONDS=0
 while true; do
   # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
-  STATUS=`$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RagPort}/")`
+  STATUS=$$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RagPort}/")
 
   if [ "$STATUS" -eq 200 ]; then
     echo "✅ RAG server is healthy!"
