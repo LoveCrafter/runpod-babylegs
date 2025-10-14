@@ -24,6 +24,11 @@ fi
 POD_IP="$1"
 POD_PORT="$2"
 
+if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
+  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script."
+  exit 1
+fi
+
 # --- Remote Path Configuration ---
 # These paths are on the remote pod.
 WORKSPACE_DIR="/workspace"
@@ -39,8 +44,8 @@ RAG_PORT="5000"
 LLAMA_PORT="8080"
 
 # --- LLM Parameter Configuration (Optimized) ---
-GPU_LAYERS=34
-CONTEXT_SIZE=1024
+GPU_LAYERS=35
+CONTEXT_SIZE=512
 
 
 # --- Main Execution via SSH Here-Document ---
