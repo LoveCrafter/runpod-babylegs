@@ -8,26 +8,16 @@ set -e
 # This script provides a single, reliable "launch button" to initialize all
 # services on a remote RunPod instance from your local terminal.
 #
-# It accepts the Pod IP and Port as command-line arguments.
+# It will prompt you for the Pod IP and Port.
 #
 # Usage:
-# ./start_services.sh <POD_IP_ADDRESS> <POD_PORT>
+# ./start_services.sh
 # ==============================================================================
 
 # --- Configuration ---
-# Accept Pod IP and Port from command-line arguments
-if [ "$#" -ne 2 ]; then
-    echo "❌ Error: Incorrect number of arguments."
-    echo "Usage: $0 <POD_IP_ADDRESS> <POD_PORT>"
-    exit 1
-fi
-POD_IP="$1"
-POD_PORT="$2"
-
-if [[ "$POD_IP" == "<YOUR_POD_IP_ADDRESS>" || "$POD_PORT" == "<YOUR_POD_PORT>" ]]; then
-  echo "❌ Error: Please replace the placeholder values for POD_IP and POD_PORT in the script."
-  exit 1
-fi
+# Prompt the user for the Pod IP and Port
+read -p "Enter the Pod IP Address: " POD_IP
+read -p "Enter the Pod SSH Port: " POD_PORT
 
 # --- Remote Path Configuration ---
 # These paths are on the remote pod.
@@ -44,8 +34,8 @@ RAG_PORT="5000"
 LLAMA_PORT="8080"
 
 # --- LLM Parameter Configuration (Optimized) ---
-GPU_LAYERS=35
-CONTEXT_SIZE=512
+GPU_LAYERS=34
+CONTEXT_SIZE=1024
 
 
 # --- Main Execution via SSH Here-Document ---

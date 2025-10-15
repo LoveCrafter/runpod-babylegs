@@ -1,12 +1,3 @@
-[CmdletBinding()]
-param (
-    [Parameter(Mandatory=$true)]
-    [string]$PodIp,
-
-    [Parameter(Mandatory=$true)]
-    [string]$PodPort
-)
-
 # ==============================================================================
 # Unified Services Launcher for Vesper AI Pod (PowerShell Edition)
 #
@@ -14,11 +5,16 @@ param (
 # This script provides a single, reliable "launch button" to initialize all
 # services on a remote RunPod instance from your local Windows terminal.
 #
-# It accepts the Pod IP and Port as command-line arguments.
+# It will prompt you for the Pod IP and Port.
 #
 # Usage:
-# .\start_services.ps1 -PodIp <YOUR_IP_ADDRESS> -PodPort <YOUR_PORT>
+# .\start_services.ps1
 # ==============================================================================
+
+# --- Configuration ---
+# Prompt the user for the Pod IP and Port
+$PodIp = Read-Host "Enter the Pod IP Address"
+$PodPort = Read-Host "Enter the Pod SSH Port"
 
 # --- Remote Path Configuration ---
 $WorkspaceDir = "/workspace"
@@ -64,7 +60,7 @@ echo "⏳ Waiting for RAG server to become healthy..."
 SECONDS=0
 while true; do
   # Use curl to check the health endpoint. The server is ready when it returns a 200 status.
-  STATUS=$$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RagPort}/")
+  STATUS=\$(curl -s -o /dev/null -w "%\{http_code\}" "http://localhost:${RagPort}/")
 
   if [ "$STATUS" -eq 200 ]; then
     echo "✅ RAG server is healthy!"
