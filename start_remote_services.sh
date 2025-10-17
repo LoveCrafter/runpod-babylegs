@@ -86,10 +86,11 @@ MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
 # --- Argument Parsing ---
 RESTART_LLM=false
 FOREGROUND_LLM=false
-for arg in "$@"; do
-  case $arg in
+while [[ $# -gt 0 ]]; do
+  case "$1" in
     --restart-llm) RESTART_LLM=true; shift ;;
     --foreground-llm) FOREGROUND_LLM=true; shift ;;
+    *) shift ;; # Ignore unknown options
   esac
 done
 
