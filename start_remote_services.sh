@@ -66,14 +66,12 @@ stop_llm_server() {
   fi
 }
 
-# --- Dependency & Configuration Checks ---
-if ! command -v lsof &> /dev/null; then
-    echo "❌ Error: 'lsof' command not found. Please install it to continue." >&2
-    exit 1
 fi
 
 if [ ! -f "$CONFIG_FILE" ]; then
   echo "❌ Error: Configuration file not found at $CONFIG_FILE." >&2
+  echo "Please create it by copying the example: cp $REPO_DIR/vesper.conf.example $CONFIG_FILE" >&2
+  echo "Then, edit $CONFIG_FILE with your desired settings." >&2
   exit 1
 fi
 
