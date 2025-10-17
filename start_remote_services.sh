@@ -32,7 +32,7 @@ WORKSPACE_DIR="/workspace"
 REPO_DIR="$WORKSPACE_DIR/runpod-babylegs"
 VENV_PATH="$REPO_DIR/vesper_env/bin/activate"
 # Corrected default model path, removing duplicated directory segments.
-MODEL_PATH="${VESPER_MODEL_PATH:-$REPO_DIR/models/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf}"
+MODEL_PATH="${VESPER_MODEL_PATH:-$REPO_DIR/models/Q4_K_M-GGUF-00001-of-00009.gguf}"
 RAG_SCRIPT_PATH="$REPO_DIR/build_memory.py"
 LLAMA_SERVER_PATH="$REPO_DIR/llama.cpp/build/bin/llama-server"
 LLAMA_CPP_DIR="$REPO_DIR/llama.cpp"
