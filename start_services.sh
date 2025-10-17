@@ -13,7 +13,7 @@ set -e
 # its logs to this terminal.
 #
 # Usage:
-# ./start_services.sh <POD_IP> <POD_PORT>
+# ./start_services.sh
 # ==============================================================================
 
 # --- Argument Validation ---

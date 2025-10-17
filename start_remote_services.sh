@@ -21,6 +21,12 @@ set -e
 # ./start_remote_services.sh [--foreground-llm]
 # ==============================================================================
 
+# --- Dependency Check ---
+if ! command -v lsof &> /dev/null; then
+    echo "❌ Error: 'lsof' command not found. Please install it to continue." >&2
+    exit 1
+fi
+
 # --- Path Configuration ---
 WORKSPACE_DIR="/workspace"
 REPO_DIR="$WORKSPACE_DIR/runpod-babylegs"
