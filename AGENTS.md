@@ -53,20 +53,13 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
     ```
 
 5.  **Compile `llama-server`:**
-    - The `start_services.sh` script handles this automatically. If you need to do it manually:
-      ```bash
-      # From the repo root
-      cd llama.cpp
-      make
-      cd ..
-      ```
+    - The `start_remote_services.sh` script handles this automatically.
 
 ### 2.3. Launching Services
 
-- **Desktop (Local Machine):** Use the provided startup scripts from the repository root:
-  - **Linux/macOS:** `./start_services.sh`
-  - **Windows:** `.\\start_services.ps1`
-- **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute the `/workspace/runpod-babylegs/start_remote_services.sh` script on the remote pod. This provides a one-tap launch experience.
+- **Execution Command:** The `start_remote_services.sh` script is the single source of truth for launching services on the remote pod.
+- **Desktop (Local Machine):** The `start_services.sh` and `start_services.ps1` scripts connect to the pod and execute `start_remote_services.sh --foreground-llm` to stream logs to the user's terminal.
+- **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute `start_remote_services.sh` (in background mode) on the remote pod.
 
 ---
 
@@ -82,8 +75,10 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
 
 ### 4.1. Syncing Protocol (Critical)
 
-**Problem:** Your sandboxed environment does not automatically sync with the remote repository.
-**Solution:** Before starting any new task, you **must** force your local `master` branch to exactly match the remote `master`. Use this command sequence:
+**Problem:** Your sandboxed environment does not automatically sync with the remote repository. This can lead to working on an outdated version of the code.
+**Solution:** Before starting any new task, you **must** ask yourself if the remote repository has changed since your last sync. You **must** run the sync protocol if the user indicates that they have updated the repository (e.g., by merging a pull request).
+
+**Sync Command:**
 ```bash
 git checkout master
 git fetch origin

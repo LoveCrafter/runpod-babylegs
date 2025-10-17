@@ -19,7 +19,7 @@ This project provides a comprehensive environment for running a high-performance
 
 ### Launching the Services
 
-The startup scripts now accept your Pod's IP address and SSH port directly as command-line arguments, removing the need to manually edit any files.
+The startup scripts connect to your pod and execute the `start_remote_services.sh` script, which is the single source of truth for launching services.
 
 #### For macOS & Linux Users
 
@@ -42,13 +42,13 @@ Open your terminal, navigate to the project directory, and run the following com
     ```
     *Example:* `.\start_services.ps1 -PodIp 216.81.245.97 -PodPort 11114`
 
-After running the script, it will compile the `llama-server` if needed, start all services on the remote pod, and provide you with the final `ssh` commands to paste into a new terminal to access the model.
+After running the script, it will start all services on the remote pod and stream the `llama-server` logs to your terminal. You will then need to open a **second terminal** to create an SSH tunnel to access the model.
 
 ---
 
 ## Mobile Access with Termius (One-Tap Launch)
 
-For a seamless mobile experience, you can use Termius's built-in features to launch and connect to the pod with a single tap. This method is more robust and reliable than the previous script-based approach.
+For a seamless mobile experience, you can use Termius's built-in features to launch and connect to the pod with a single tap. This method is more robust and reliable.
 
 ### One-Time Setup in Termius
 
@@ -76,6 +76,6 @@ For a seamless mobile experience, you can use Termius's built-in features to lau
 Now, simply tap on the "Vesper Pod" host in Termius. It will automatically:
 1.  Establish the SSH connection.
 2.  Activate the port forwarding rule you created.
-3.  Run the startup snippet on the remote pod, which ensures the RAG and LLM servers are running.
+3.  Run the startup snippet on the remote pod, which ensures the RAG and LLM servers are running in the background.
 
 Once connected, you can open a browser on your phone and navigate to `http://localhost:8080` to interact with the model. The Termius session must remain active in the background.

@@ -16,10 +16,15 @@ set -e
 # ./start_services.sh
 # ==============================================================================
 
-# --- Configuration ---
-# Prompt the user for the Pod IP and Port
-read -p "Enter the Pod IP Address: " POD_IP
-read -p "Enter the Pod SSH Port: " POD_PORT
+# --- Argument Validation ---
+if [ "$#" -ne 2 ]; then
+    echo "❌ Error: Missing arguments."
+    echo "Usage: $0 <POD_IP> <POD_PORT>"
+    exit 1
+fi
+
+POD_IP=$1
+POD_PORT=$2
 
 # --- Remote Path Configuration ---
 REMOTE_SCRIPT_PATH="/workspace/runpod-babylegs/start_remote_services.sh"

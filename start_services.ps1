@@ -3,20 +3,27 @@
 #
 # Description:
 # This script provides a single "launch button" to initialize all services
-# on a remote RunPod instance from your local Windows terminal. It will prompt
-# for the Pod IP and Port, then connect and execute the remote startup script.
+# on a remote RunPod instance from your local Windows terminal. It takes the
+# Pod IP and Port as arguments, then connects and executes the remote script.
 #
 # The remote script will launch the LLM server in the foreground, streaming
 # its logs to this terminal.
 #
 # Usage:
-# .\start_services.ps1
+# .\start_services.ps1 -PodIp <YOUR_POD_IP> -PodPort <YOUR_POD_PORT>
 # ==============================================================================
 
-# --- Configuration ---
-# Prompt the user for the Pod IP and Port
-$PodIp = Read-Host "Enter the Pod IP Address"
-$PodPort = Read-Host "Enter the Pod SSH Port"
+param(
+    [string]$PodIp,
+    [string]$PodPort
+)
+
+# --- Argument Validation ---
+if (-not $PodIp -or -not $PodPort) {
+    Write-Host "❌ Error: Missing arguments." -ForegroundColor Red
+    Write-Host "Usage: .\start_services.ps1 -PodIp <YOUR_POD_IP> -PodPort <YOUR_POD_PORT>"
+    exit 1
+}
 
 # --- Remote Path Configuration ---
 $RemoteScriptPath = "/workspace/runpod-babylegs/start_remote_services.sh"
