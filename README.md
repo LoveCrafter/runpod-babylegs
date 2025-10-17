@@ -17,9 +17,20 @@ This project provides a comprehensive environment for running a high-performance
     pip install -r requirements.txt
     ```
 
+### Configuring the Services
+
+All key parameters for the model, such as the number of GPU layers and the context size, are controlled via the `vesper.conf` file.
+
+1.  **Edit the Configuration:** Open the `vesper.conf` file and adjust the values as needed.
+2.  **Apply the Changes:** To apply your new settings, you must restart the LLM server. You can do this without rebooting the pod. Simply SSH into the pod and run the following command from the repository root:
+    ```bash
+    ./start_remote_services.sh --restart-llm
+    ```
+    This will safely stop the current server and launch a new one with your updated configuration.
+
 ### Launching the Services
 
-The startup scripts connect to your pod and execute the `start_remote_services.sh` script, which is the single source of truth for launching services.
+The local startup scripts (`start_services.sh` and `start_services.ps1`) connect to your pod and execute the remote `start_remote_services.sh` script, which reads its settings from `vesper.conf` and launches the services.
 
 #### For macOS & Linux Users
 

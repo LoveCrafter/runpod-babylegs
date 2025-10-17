@@ -55,9 +55,14 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
 5.  **Compile `llama-server`:**
     - The `start_remote_services.sh` script handles this automatically.
 
-### 2.3. Launching Services
+### 2.3. Service Configuration
 
-- **Execution Command:** The `start_remote_services.sh` script is the single source of truth for launching services on the remote pod.
+- **Configuration File:** All key parameters (GPU layers, context size, model path, ports) are defined in `vesper.conf`. This is the primary file to edit when experimenting with settings.
+- **Applying Changes:** To apply new settings to the LLM server, connect to the pod and run `./start_remote_services.sh --restart-llm`. This will stop the current server and launch a new one with the updated configuration.
+
+### 2.4. Launching Services
+
+- **Execution Command:** The `start_remote_services.sh` script is the single source of truth for launching services on the remote pod. It reads its settings from `vesper.conf`.
 - **Desktop (Local Machine):** The `start_services.sh` and `start_services.ps1` scripts connect to the pod and execute `start_remote_services.sh --foreground-llm` to stream logs to the user's terminal.
 - **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute `start_remote_services.sh` (in background mode) on the remote pod.
 
