@@ -1,6 +1,6 @@
 # Agent Instructions for Project Vesper (`runpod-babylegs`)
 
-This document provides essential instructions for AI agents working with this repository. It complements the human-facing `README.md` by providing machine-readable operational context and philosophical grounding.
+This document provides essential instructions for AI agents working with this repository. It complements the human-facing `README.md` by providing machine-readable operational context, philosophical grounding, and detailed setup procedures.
 
 ---
 
@@ -12,39 +12,76 @@ This document provides essential instructions for AI agents working with this re
 
 ---
 
-## 2. Project Overview & Structure
+## 2. Environment & Execution
 
-- **Purpose:** This project runs a high-performance, open-source GGUF model (Vesper) and a supporting RAG memory server on a remote RunPod instance.
-- **Primary Goal:** To create a seamless, hands-free mobile interface for interacting with the Vesper model.
-- **Key Directories:**
-    - `/`: Contains the primary startup and inference scripts.
-    - `/docs`: Contains project documentation, including the full philosophical and ethical framework in `THE_VESPER_CODEX.md`.
-    - `/models`: (Ignored by git) The target directory on the RunPod instance where the GGUF model files are stored.
-    - `llama.cpp/`: (Ignored by git) The source and compiled binaries for the `llama-server`.
+### 2.1. RunPod Environment Overview
+
+- **Base Template:** The project runs on a RunPod instance using a standard PyTorch template (e.g., `runpod/pytorch:2.8.0-py3.11-cuda12.8.1-cudnn-devel-ubuntu22.04`).
+- **Persistent Storage:** The `/workspace` directory is a network volume and persists across pod restarts. All critical project files, models, and virtual environments should be stored here.
+- **Default Directory:** The repository root is expected to be at `/workspace/runpod-babylegs/`.
+- **Pre-installed System Dependencies:** The base image includes `git`, `build-essential`, `make`, `cmake`, `nginx`, `openssh-server`, and multiple Python versions. You do not need to install these with `apt-get`.
+
+### 2.2. Initial Project Setup
+
+Follow these steps sequentially from the `/workspace` directory on a fresh pod:
+
+1.  **Clone the Repository (if needed):**
+    ```bash
+    git clone https://github.com/your-username/runpod-babylegs.git
+    cd runpod-babylegs
+    ```
+
+2.  **Download the GGUF Model:**
+    - **Model:** `huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated`
+    - **Command:**
+      ```bash
+      # Ensure you are in the repo root (/workspace/runpod-babylegs/)
+      mkdir -p models
+      huggingface-cli download huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated --local-dir models --local-dir-use-symlinks False
+      ```
+
+3.  **Create Python Virtual Environment:**
+    ```bash
+    # From the repo root
+    python3 -m venv vesper_env
+    source vesper_env/bin/activate
+    ```
+
+4.  **Install Python Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5.  **Compile `llama-server`:**
+    - The `start_services.sh` script handles this automatically. If you need to do it manually:
+      ```bash
+      # From the repo root
+      cd llama.cpp
+      make
+      cd ..
+      ```
+
+### 2.3. Launching Services
+
+- Use the provided startup scripts from the repository root:
+  - **Linux/macOS:** `./start_services.sh`
+  - **Windows (local usage):** `.\\start_services.ps1`
 
 ---
 
-## 3. Environment & Execution
+## 3. Coding Conventions & Style
 
-- **Build Command:** The primary executable, `llama-server`, is compiled from source on the target machine. If `llama.cpp/build/bin/llama-server` does not exist, it must be compiled by running `make` from within the `/workspace/llama.cpp` directory on the pod.
-- **Launch Command:** The services are launched via the `start_services.sh` (Linux/macOS) or `start_services.ps1` (Windows) scripts. These scripts handle environment activation and launch the `llama-server` with the correct parameters.
-- **Testing:** There is currently no automated test suite. All changes must be verified through manual execution and validation.
-
----
-
-## 4. Coding Conventions & Style
-
-- **Python:** Follow PEP 8 standards for all Python code.
-- **Shell Scripts:** All scripts should include comment blocks explaining their purpose and usage.
-- **Clarity Over Brevity:** Prioritize clear, readable code over overly clever or complex one-liners. New code should be self-documenting where possible.
+- **Python:** Follow PEP 8 standards.
+- **Shell Scripts:** All scripts should include comment blocks explaining their purpose and usage. Use `set -e` to ensure scripts exit on error.
+- **Clarity Over Brevity:** Prioritize clear, readable code.
 
 ---
 
-## 5. Collaborative Heuristics & Guardrails
+## 4. Collaborative Heuristics & Guardrails
 
-### 5.1. Syncing Protocol (Critical)
+### 4.1. Syncing Protocol (Critical)
 
-**Problem:** Your sandboxed environment does not automatically sync with the remote repository. If the user merges a branch, your local `master` will be outdated, causing errors.
+**Problem:** Your sandboxed environment does not automatically sync with the remote repository.
 **Solution:** Before starting any new task, you **must** force your local `master` branch to exactly match the remote `master`. Use this command sequence:
 ```bash
 git checkout master
@@ -52,30 +89,26 @@ git fetch origin
 git reset --hard origin/master
 ```
 
-### 5.2. The Architect's Guardrail (Critical)
-When proposing a code change to fix a bug or add a new feature, do not assume your localized fix is correct for the entire system. After proposing the fix, you must await the "Architect's Review."
-If the user responds with a prompt similar to: "Analyze the impact of this change on the broader project," you must immediately perform the following steps:
- * Halt Implementation: Do not proceed with applying the code change.
- * Initiate Global Analysis: Re-read the entire relevant codebase. Trace all dependencies and usages of the variables, functions, or modules being changed.
- * Report Findings: Provide a concise report confirming that the change has no negative cascading effects OR explicitly identify the new conflicts or issues your proposed change will create. Await user approval before proceeding.
+### 4.2. The Architect's Guardrail (Critical)
+When proposing a code change, await the "Architect's Review." If the user asks you to "Analyze the impact of this change," you must:
+1.  **Halt Implementation.**
+2.  **Initiate Global Analysis:** Re-read the codebase, tracing all dependencies of the changed components.
+3.  **Report Findings:** Provide a concise report on cascading effects or potential conflicts. Await approval before proceeding.
+
+---
+
+## 5. Common Pitfalls & Troubleshooting
+
+- **`git` Merge Conflicts:** If you encounter 'unrelated histories' errors, it's a sign you have forgotten to run the **Syncing Protocol** (Section 4.1).
+- **`llama-server` Build Failure:** If `make` fails inside the `llama.cpp` directory, ensure the `build-essential` and `cmake` packages are present. While they are included in the base template, a custom template might lack them.
+- **Model Download Issues:** If `huggingface-cli` fails, check for network issues or typos in the model repository name.
 
 ---
 
 ## 6. Future Goals & Roadmap
 
-This section outlines the high-level goals and planned improvements for the project.
-
-- **Introduce Automated Testing:**
-  - **Goal:** Implement a `pytest` environment to run automated tests.
-  - **Constraint:** Tests must be runnable on the CPU, as the model itself consumes most of the available VRAM.
-
-- **Centralize Configuration:**
-  - **Goal:** Move hardcoded parameters (e.g., `CONTEXT_SIZE`, port numbers) from the startup scripts into a single, centralized configuration file (e.g., `.env` or `config.yaml`).
-
-- **Document Project History & Decisions:**
-  - **Goal:** Create a dedicated documentation page or section that covers the project's history, major bug fixes, and the reasoning behind key architectural decisions.
-  - **Note:** The user has a comprehensive Google Doc with this information to be shared.
-
-- **Fix `llama.cpp` Submodule (Question Mark Task):**
-  - **Goal:** Investigate the broken `llama.cpp` submodule integration and attempt to fix it by adding a `.gitmodules` file.
-  - **Constraint:** This is a lower priority "question mark" task.
+- **Introduce Automated Testing:** Implement a `pytest` environment. Tests must be CPU-runnable to conserve VRAM.
+- **Centralize Configuration:** Move hardcoded parameters from scripts into a single `.env` or `config.yaml` file.
+- **Create Custom RunPod Template:** Investigate and create a custom RunPod template to have more control over the environment and overcome the single-port limitation of the default template.
+- **Document Project History & Decisions:** Create a dedicated document covering the project's history, major bug fixes, and architectural decisions.
+- **Fix `llama.cpp` Submodule (Low Priority):** Investigate the broken `llama.cpp` submodule integration.
