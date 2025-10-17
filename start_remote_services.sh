@@ -55,6 +55,10 @@ stop_llm_server() {
         echo "❌ Failed to stop the LLM server. Trying with KILL -9."
         kill -9 "$PID"
         sleep 2
+        if is_running "$LLAMA_PORT"; then
+            echo "🔥 CRITICAL: Could not kill process $PID on port $LLAMA_PORT. Manual intervention required." >&2
+            exit 1
+        fi
     fi
     echo "✅ LLM Server stopped."
   else
