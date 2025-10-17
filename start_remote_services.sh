@@ -2,23 +2,37 @@
 set -e
 
 # ==============================================================================
-# Remote Services Launcher for Vesper AI Pod
+# Unified Remote Services Launcher for Vesper AI Pod
 #
 # Description:
-# This script is executed remotely by another script (e.g., mobile_connect.sh).
-# It ensures that all necessary services (RAG server, LLM server) are running
-# on the pod. It is designed to be non-interactive.
+# This script is the single source of truth for starting services on the pod.
+# It is designed to be idempotent and can be executed in two modes:
 #
-# It handles auto-compilation of llama-server and runs the servers in the
-# background so that the SSH connection that started it can be used for
-# port-forwarding.
+# 1. Background Mode (default):
+#    Starts all services in the background. This is for use with mobile
+#    clients like Termius where the session is just for kicking off services.
+#
+# 2. Foreground Mode (`--foreground-llm`):
+#    Starts the RAG server in the background but launches the main LLM server
+#    in the foreground. This allows desktop scripts to stream logs directly
+#    to the user's terminal.
+#
+# Usage:
+# ./start_remote_services.sh [--foreground-llm]
 # ==============================================================================
+
+# --- Dependency Check ---
+if ! command -v lsof &> /dev/null; then
+    echo "❌ Error: 'lsof' command not found. Please install it to continue." >&2
+    exit 1
+fi
 
 # --- Path Configuration ---
 WORKSPACE_DIR="/workspace"
 REPO_DIR="$WORKSPACE_DIR/runpod-babylegs"
 VENV_PATH="$REPO_DIR/vesper_env/bin/activate"
-MODEL_PATH="${VESPER_MODEL_PATH:-$REPO_DIR/models/huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated/Q4_K_M-GGUF/Q4_K_M-GGUF/Q4_K_M-GGUF-00001-of-00009.gguf}"
+# Corrected default model path, removing duplicated directory segments.
+MODEL_PATH="${VESPER_MODEL_PATH:-$REPO_DIR/models/Q4_K_M-GGUF-00001-of-00009.gguf}"
 RAG_SCRIPT_PATH="$REPO_DIR/build_memory.py"
 LLAMA_SERVER_PATH="$REPO_DIR/llama.cpp/build/bin/llama-server"
 LLAMA_CPP_DIR="$REPO_DIR/llama.cpp"
@@ -37,15 +51,12 @@ LLAMA_LOG_FILE="$WORKSPACE_DIR/llama_server.log"
 
 # --- Function to check if a process is running on a given port ---
 is_running() {
-  if lsof -i -P -n | grep -q ":$1 (LISTEN)"; then
-    return 0 # 0 means true in bash
-  else
-    return 1
-  fi
+  # Check if a process is listening on the given TCP port.
+  lsof -i tcp:"$1" -sTCP:LISTEN -P -n >/dev/null 2>&1
 }
 
 # --- Main Execution ---
-echo "--- Remote Service Check ---"
+echo "--- Unified Remote Service Launcher ---"
 
 # Activate Python environment
 echo "🐍 Activating Python environment..."
@@ -62,29 +73,51 @@ fi
 
 # Check and start RAG Memory Server
 if is_running $RAG_PORT; then
-  echo "🧠 RAG Memory Server is already running."
+  echo "🧠 RAG Memory Server is already running on port $RAG_PORT."
 else
   echo "🧠 Starting RAG Memory Server in the background..."
   nohup python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
+
+  # --- Re-added Health Check for RAG Server ---
+  echo "⏳ Waiting for RAG server to become healthy..."
+  SECONDS=0
+  while true; do
+    # Use curl to check the health endpoint.
+    STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:${RAG_PORT}/")
+    if [ "$STATUS" -eq 200 ]; then
+      echo "✅ RAG server is healthy!"
+      break
+    fi
+    if [ $SECONDS -ge 30 ]; then
+      echo "❌ RAG server did not become healthy within 30 seconds. Check $RAG_LOG_FILE for errors."
+      exit 1
+    fi
+    sleep 1
+  done
 fi
 
 # Check and start Main LLM Server
 if is_running $LLAMA_PORT; then
-  echo "🧠 Main LLM Server is already running."
+  echo "🧠 Main LLM Server is already running on port $LLAMA_PORT."
 else
-  echo "🧠 Launching Main LLM Server in the background..."
-  nohup "$LLAMA_SERVER_PATH" \
-    --model "$MODEL_PATH" \
-    --n-gpu-layers $GPU_LAYERS \
-    --ctx-size $CONTEXT_SIZE \
-    --host 0.0.0.0 \
-    --port $LLAMA_PORT > "$LLAMA_LOG_FILE" 2>&1 &
+  # --- Secure Command Execution using Bash Array ---
+  # This avoids command injection vulnerabilities from using eval.
+  LLM_COMMAND_ARGS=(
+    --model "$MODEL_PATH"
+    --n-gpu-layers "$GPU_LAYERS"
+    --ctx-size "$CONTEXT_SIZE"
+    --host "0.0.0.0"
+    --port "$LLAMA_PORT"
+  )
+
+  if [ "$1" == "--foreground-llm" ]; then
+    echo "🧠 Launching Main LLM Server in the foreground..."
+    "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}"
+  else
+    echo "🧠 Launching Main LLM Server in the background..."
+    nohup "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}" > "$LLAMA_LOG_FILE" 2>&1 &
+  fi
 fi
 
-echo "✅ Remote services are running."
+echo "✅ Service check complete. All services should be running."
 echo "-----------------------------------------------------"
-# This final message is to let the user of mobile_connect.sh know it's safe to proceed.
-echo "SSH tunnel is now active. You can connect to http://localhost:$LLAMA_PORT"
-echo "This terminal window will now idle to keep the connection alive. Press Ctrl+C to close."
-# The 'sleep infinity' is a simple way to keep the script (and thus the SSH session) alive.
-sleep infinity
