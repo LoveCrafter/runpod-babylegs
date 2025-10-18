@@ -7,3 +7,4 @@ llama.cpp/
 .cache/
 .ipynb_checkpoints/
 *.swp
+vesper.conf

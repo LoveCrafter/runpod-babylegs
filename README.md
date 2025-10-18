@@ -6,20 +6,39 @@ This project provides a comprehensive environment for running a high-performance
 
 ## Quick Start: Initializing the Pod
 
-### Prerequisites
+### Prerequisites on the Remote Pod
 
-1.  **Clone this repository** to your local machine.
-2.  **Download the Model:** Place the GGUF model file(s) in the `models/` directory.
-3.  **Setup Python Environment:** Create and activate a virtual environment, and install the required packages:
+Before running the local startup scripts, ensure the following steps have been completed on your RunPod instance. The `start_remote_services.sh` script includes pre-flight checks and will report an error if these are not correctly in place.
+
+1.  **Clone the Repository:** The entire project must be cloned into the persistent `/workspace` directory.
     ```bash
+    # Connect to your pod and run:
+    cd /workspace
+    git clone https://github.com/LoveCrafter/runpod-babylegs.git
+    ```
+2.  **Download the Model:** Place the GGUF model file(s) in the `/workspace/runpod-babylegs/models/` directory. The expected path is configured in `vesper.conf`.
+3.  **Setup Python Environment:** Create and activate a virtual environment inside the repository folder.
+    ```bash
+    # From the /workspace/runpod-babylegs directory:
     python3 -m venv vesper_env
     source vesper_env/bin/activate
     pip install -r requirements.txt
     ```
 
+### Configuring the Services
+
+All key parameters for the model, such as the number of GPU layers and the context size, are controlled via the `vesper.conf` file.
+
+1.  **Edit the Configuration:** Open the `vesper.conf` file and adjust the values as needed.
+2.  **Apply the Changes:** To apply your new settings, you must restart the LLM server. You can do this without rebooting the pod. Simply SSH into the pod and run the following command from the repository root:
+    ```bash
+    ./start_remote_services.sh --restart-llm
+    ```
+    This will safely stop the current server and launch a new one with your updated configuration.
+
 ### Launching the Services
 
-The startup scripts now accept your Pod's IP address and SSH port directly as command-line arguments, removing the need to manually edit any files.
+The local startup scripts (`start_services.sh` and `start_services.ps1`) connect to your pod and execute the remote `start_remote_services.sh` script, which reads its settings from `vesper.conf` and launches the services.
 
 #### For macOS & Linux Users
 
@@ -42,37 +61,40 @@ Open your terminal, navigate to the project directory, and run the following com
     ```
     *Example:* `.\start_services.ps1 -PodIp 216.81.245.97 -PodPort 11114`
 
-After running the script, it will compile the `llama-server` if needed, start all services on the remote pod, and provide you with the final `ssh` commands to paste into a new terminal to access the model.
+After running the script, it will start all services on the remote pod and stream the `llama-server` logs to your terminal. You will then need to open a **second terminal** to create an SSH tunnel to access the model.
 
 ---
 
 ## Mobile Access with Termius (One-Tap Launch)
 
-For a seamless mobile experience, you can use the `mobile_connect.sh` script to launch and connect to the pod with a single tap in an SSH client like Termius.
+For a seamless mobile experience, you can use Termius's built-in features to launch and connect to the pod with a single tap. This method is more robust and reliable.
 
 ### One-Time Setup in Termius
 
-1.  **Create a New Host:**
-    *   **Alias:** `Vesper Pod`
-    *   **Hostname:** Your Pod's IP Address (e.g., `216.81.245.97`)
-    *   **Port:** Your Pod's SSH Port (e.g., `11114`)
-    *   **Username:** `root`
-    *   **Password:** Your Pod's Password
+1.  **Create/Edit your Host:**
+    *   Navigate to the "Hosts" section in Termius and select your Vesper pod host.
+    *   Ensure the `Hostname`, `Port`, `Username`, and `Password` are correctly filled in.
 
-2.  **Create a Snippet:**
-    *   Go to the "Snippets" section in Termius.
-    *   Create a new snippet with the following content:
+2.  **Configure Port Forwarding:**
+    *   In the Host settings, find the "Port Forwarding" section.
+    *   Create a new **Local** port forwarding rule:
+        *   **Port (on your phone):** `8080`
+        *   **Destination Host (on the pod):** `127.0.0.1`
+        *   **Destination Port (on the pod):** `8080`
+
+3.  **Create and Assign a Startup Snippet:**
+    *   Go to the "Snippets" section and create a new snippet with the following command:
         ```bash
-        cd /workspace/runpod-babylegs && ./mobile_connect.sh <YOUR_POD_IP> <YOUR_POD_PORT>
+        /workspace/runpod-babylegs/start_remote_services.sh
         ```
-    *   **Important:** Replace `<YOUR_POD_IP>` and `<YOUR_POD_PORT>` with your actual pod credentials.
-
-3.  **Link Snippet to Host:**
-    *   Go back to the Host you created.
+    *   Go back to your Host settings.
     *   Under the "Startup Snippet" option, select the snippet you just created.
 
 ### Launching the Connection
 
-Now, simply tap on the "Vesper Pod" host in Termius. It will automatically connect, run the startup script, and establish the SSH tunnel.
+Now, simply tap on the "Vesper Pod" host in Termius. It will automatically:
+1.  Establish the SSH connection.
+2.  Activate the port forwarding rule you created.
+3.  Run the startup snippet on the remote pod, which ensures the RAG and LLM servers are running in the background.
 
-Once the script finishes (you'll see a message "SSH tunnel is now active"), you can open a browser on your phone and navigate to `http://localhost:8080` to interact with the model. The Termius session must remain active in the background.
+Once connected, you can open a browser on your phone and navigate to `http://localhost:8080` to interact with the model. The Termius session must remain active in the background.
