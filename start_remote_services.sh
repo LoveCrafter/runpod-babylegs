@@ -52,8 +52,8 @@ pre_flight_checks() {
         echo "❌ CRITICAL: Repository directory not found at $REPO_DIR." >&2
         all_checks_passed=false
     fi
-    if [ ! -d "$VENV_PATH" ]; then
-        echo "❌ CRITICAL: Python virtual environment not found at $VENV_PATH." >&2
+    if [ ! -f "$VENV_PATH" ]; then
+        echo "❌ CRITICAL: Python virtual environment activation script not found at $VENV_PATH." >&2
         all_checks_passed=false
     fi
     if [ ! -f "$CONFIG_FILE" ]; then
