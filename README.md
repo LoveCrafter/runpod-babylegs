@@ -6,12 +6,20 @@ This project provides a comprehensive environment for running a high-performance
 
 ## Quick Start: Initializing the Pod
 
-### Prerequisites
+### Prerequisites on the Remote Pod
 
-1.  **Clone this repository** to your local machine.
-2.  **Download the Model:** Place the GGUF model file(s) in the `models/` directory.
-3.  **Setup Python Environment:** Create and activate a virtual environment, and install the required packages:
+Before running the local startup scripts, ensure the following steps have been completed on your RunPod instance. The `start_remote_services.sh` script includes pre-flight checks and will report an error if these are not correctly in place.
+
+1.  **Clone the Repository:** The entire project must be cloned into the persistent `/workspace` directory.
     ```bash
+    # Connect to your pod and run:
+    cd /workspace
+    git clone https://github.com/LoveCrafter/runpod-babylegs.git
+    ```
+2.  **Download the Model:** Place the GGUF model file(s) in the `/workspace/runpod-babylegs/models/` directory. The expected path is configured in `vesper.conf`.
+3.  **Setup Python Environment:** Create and activate a virtual environment inside the repository folder.
+    ```bash
+    # From the /workspace/runpod-babylegs directory:
     python3 -m venv vesper_env
     source vesper_env/bin/activate
     pip install -r requirements.txt

@@ -44,6 +44,38 @@ is_running() {
   lsof -i tcp:"$1" -sTCP:LISTEN -P -n >/dev/null 2>&1
 }
 
+pre_flight_checks() {
+    echo "--- Running Pre-flight Checks ---"
+    local all_checks_passed=true
+
+    if [ ! -d "$REPO_DIR" ]; then
+        echo "❌ CRITICAL: Repository directory not found at $REPO_DIR." >&2
+        all_checks_passed=false
+    fi
+    if [ ! -f "$VENV_PATH" ]; then
+        echo "❌ CRITICAL: Python virtual environment activation script not found at $VENV_PATH." >&2
+        all_checks_passed=false
+    fi
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo "❌ CRITICAL: Configuration file not found at $CONFIG_FILE." >&2
+        all_checks_passed=false
+    fi
+    # Source config here to check for model path
+    source "$CONFIG_FILE"
+    MODEL_PATH_CHECK="${VESPER_MODEL_PATH:-$MODEL_PATH}"
+    if [ ! -f "$MODEL_PATH_CHECK" ]; then
+        echo "❌ CRITICAL: Model file not found at '$MODEL_PATH_CHECK'." >&2
+        echo "   Please verify the MODEL_PATH in your vesper.conf." >&2
+        all_checks_passed=false
+    fi
+
+    if [ "$all_checks_passed" = false ]; then
+        echo "🔥 Pre-flight checks failed. Please resolve the issues above before running the script again." >&2
+        exit 1
+    fi
+    echo "✅ All pre-flight checks passed."
+}
+
 stop_llm_server() {
   echo "🛑 Stopping existing LLM Server..."
   PID=$(lsof -t -i tcp:"$LLAMA_PORT" -sTCP:LISTEN || true)
@@ -66,20 +98,11 @@ stop_llm_server() {
   fi
 }
 
+# --- Dependency & Configuration Checks ---
+if ! command -v lsof &> /dev/null; then
+    echo "❌ Error: 'lsof' command not found. Please install it to continue." >&2
+    exit 1
 fi
-
-if [ ! -f "$CONFIG_FILE" ]; then
-  echo "❌ Error: Configuration file not found at $CONFIG_FILE." >&2
-  echo "Please create it by copying the example: cp $REPO_DIR/vesper.conf.example $CONFIG_FILE" >&2
-  echo "Then, edit $CONFIG_FILE with your desired settings." >&2
-  exit 1
-fi
-
-# --- Configuration Loading ---
-echo "📜 Loading configuration from $CONFIG_FILE..."
-source "$CONFIG_FILE"
-# Allow environment variable to override the model path from the config file
-MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
 
 # --- Argument Parsing ---
 RESTART_LLM=false
@@ -93,7 +116,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 # --- Main Execution ---
+pre_flight_checks
+
 echo "--- Unified Remote Service Launcher ---"
+
+# --- Configuration Loading ---
+# All checks passed, so we can safely source the config file.
+source "$CONFIG_FILE"
+MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
 
 # Activate Python environment
 echo "🐍 Activating Python environment..."
@@ -105,9 +135,14 @@ if [ "$RESTART_LLM" = true ]; then
 else
   # --- Auto-compile llama-server if it doesn't exist ---
   if [ ! -f "$LLAMA_SERVER_PATH" ]; then
-    echo "🛠️ 'llama-server' not found. Compiling now..."
+    echo "🛠️ 'llama-server' not found. Compiling with CMake..."
     cd "$LLAMA_CPP_DIR"
-    make
+    # Create a build directory and navigate into it
+    mkdir -p build
+    cd build
+    # Configure the project with CMake and build it
+    cmake ..
+    cmake --build .
     echo "✅ Compilation complete."
     cd "$REPO_DIR" # Return to the repo directory
   fi
