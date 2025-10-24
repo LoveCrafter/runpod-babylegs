@@ -90,7 +90,8 @@ stop_service_on_port() {
         sleep 2
     fi
     if is_running "$port"; then
-         echo "🔥 CRITICAL: Could not kill process on port $port." >&2
+         echo "🔥 CRITICAL: Could not kill process on port $port. Manual intervention required." >&2
+         exit 1
     else
          echo "✅ $service_name stopped."
     fi
