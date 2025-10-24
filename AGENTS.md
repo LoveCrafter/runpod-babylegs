@@ -55,17 +55,25 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
 5.  **Compile `llama-server`:**
     - The `start_remote_services.sh` script handles this automatically.
 
-### 2.3. Service Configuration
+### 2.3. Service Configuration & Architecture
 
-- **Configuration File:** All key parameters (GPU layers, context size, model path, ports) are defined in `vesper.conf`. This is the primary file to edit when experimenting with settings.
-- **Applying Changes:** To apply new settings to the LLM server, connect to the pod and run `./start_remote_services.sh --restart-llm`. This will stop the current server and launch a new one with the updated configuration.
+- **Single-Port Architecture:** The application uses Nginx as a reverse proxy to serve multiple services through the single public port provided by RunPod.
+- **Internal Ports:**
+    - RAG Memory Server: `127.0.0.1:5000`
+    - `llama-server`: `127.0.0.1:8081`
+- **Nginx Routing:** Nginx listens on the public port (e.g., `8080`) and routes traffic:
+    - Requests to `/rag/*` are forwarded to the RAG server.
+    - All other requests are forwarded to the `llama-server`.
+- **Configuration Files:**
+    - `vesper.conf`: Contains settings for the `llama-server` (GPU layers, context size, etc.).
+    - `nginx.conf`: The template for the Nginx reverse proxy configuration.
+- **Applying Changes:** To restart all services (e.g., after changing `vesper.conf`), connect to the pod and run `./start_remote_services.sh --restart`.
 
 ### 2.4. Launching Services
 
-- **Execution Command:** The `start_remote_services.sh` script is the single source of truth for launching services on the remote pod. It reads its settings from `vesper.conf` and includes pre-flight checks to verify the environment before starting.
-- **Build Process:** The script now uses `CMake` to compile the `llama-server`, replacing the previous `make` command. This is handled automatically by the script.
+- **Execution Command:** The `start_remote_services.sh` script is the single source of truth for launching all services, including the Nginx reverse proxy.
 - **Desktop (Local Machine):** The `start_services.sh` and `start_services.ps1` scripts connect to the pod and execute `start_remote_services.sh --foreground-llm` to stream logs to the user's terminal.
-- **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute `start_remote_services.sh` (in background mode) on the remote pod.
+- **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute `start_remote_services.sh` on the remote pod.
 
 ---
 
@@ -79,7 +87,11 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
 
 ## 4. Collaborative Heuristics & Guardrails
 
-### 4.1. Syncing Protocol (Critical)
+### 4.1. The "Don't Reinvent the Wheel" Principle (Critical)
+**Problem:** It is easy to default to writing custom code for a problem that has already been solved by a robust, open-source tool.
+**Solution:** Before building a new component from scratch, the first step is **always** to research existing, widely-used open-source solutions. We should prioritize building the unique "webbing" that connects powerful tools, rather than building the tools themselves.
+
+### 4.2. Syncing Protocol (Critical)
 
 **Problem:** Your sandboxed environment does not automatically sync with the remote repository. This can lead to working on an outdated version of the code.
 **Solution:** Before starting any new task, you **must** ask yourself if the remote repository has changed since your last sync. You **must** run the sync protocol if the user indicates that they have updated the repository (e.g., by merging a pull request).
@@ -91,13 +103,13 @@ git fetch origin
 git reset --hard origin/master
 ```
 
-### 4.2. The Architect's Guardrail (Critical)
+### 4.3. The Architect's Guardrail (Critical)
 When proposing a code change, await the "Architect's Review." If the user asks you to "Analyze the impact of this change," you must:
 1.  **Halt Implementation.**
 2.  **Initiate Global Analysis:** Re-read the codebase, tracing all dependencies of the changed components.
 3.  **Report Findings:** Provide a concise report on cascading effects or potential conflicts. Await approval before proceeding.
 
-### 4.3. Documentation Parity (Critical)
+### 4.4. Documentation Parity (Critical)
 **Problem:** The project has two primary documentation files: `README.md` (for humans) and `AGENTS.md` (for machines). These can easily fall out of sync.
 **Solution:** Any change that requires a documentation update **must** be reflected in **both** `README.md` and `AGENTS.md` to ensure consistency.
 
@@ -105,7 +117,7 @@ When proposing a code change, await the "Architect's Review." If the user asks y
 
 ## 5. Common Pitfalls & Troubleshooting
 
-- **`git` Merge Conflicts:** If you encounter 'unrelated histories' errors, it's a sign you have forgotten to run the **Syncing Protocol** (Section 4.1).
+- **`git` Merge Conflicts:** If you encounter 'unrelated histories' errors, it's a sign you have forgotten to run the **Syncing Protocol** (Section 4.2).
 - **`llama-server` Build Failure:** If `make` fails inside the `llama.cpp` directory, ensure the `build-essential` and `cmake` packages are present. While they are included in the base template, a custom template might lack them.
 - **Model Download Issues:** If `huggingface-cli` fails, check for network issues or typos in the model repository name.
 
@@ -113,8 +125,9 @@ When proposing a code change, await the "Architect's Review." If the user asks y
 
 ## 6. Future Goals & Roadmap
 
+- **Upgrade the Chat Interface:** The default `llama-server` web UI is very basic. Investigate and implement a robust, open-source frontend (e.g., Chainlit, Gradio, Streamlit) to provide a better user experience.
+- **Implement a Process Manager:** The `start_remote_services.sh` script uses `nohup` for background tasks. A more resilient solution would be to use a dedicated process manager like `pm2` or `supervisor` to handle auto-restarts, monitoring, and logging.
 - **Introduce Automated Testing:** Implement a `pytest` environment. Tests must be CPU-runnable to conserve VRAM.
 - **Centralize Configuration:** Move hardcoded parameters from scripts into a single `.env` or `config.yaml` file.
-- **Create Custom RunPod Template:** Investigate and create a custom RunPod template to have more control over the environment and overcome the single-port limitation of the default template.
 - **Document Project History & Decisions:** Create a dedicated document covering the project's history, major bug fixes, and architectural decisions.
 - **Fix `llama.cpp` Submodule (Low Priority):** Investigate the broken `llama.cpp` submodule integration.

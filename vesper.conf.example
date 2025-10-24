@@ -1,0 +1,20 @@
+# Vesper Configuration File - Example
+#
+# Instructions:
+# 1. Rename this file to 'vesper.conf'.
+# 2. Update the values below to match your setup.
+#
+# This file is ignored by git, so your local settings are safe.
+
+# --- Model Configuration ---
+# Absolute path to your GGUF model file.
+VESPER_MODEL_PATH="/workspace/runpod-babylegs/models/your_model_name.gguf"
+
+# --- Performance Tuning ---
+# Number of model layers to offload to the GPU.
+# Set to a high number (e.g., 99) to offload all possible layers.
+GPU_LAYERS=99
+
+# The context window size for the model.
+# A smaller size (e.g., 2048) is often better for RAG performance.
+CONTEXT_SIZE=2048
