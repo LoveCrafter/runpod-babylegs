@@ -180,7 +180,7 @@ if is_running $PUBLIC_PORT; then
 else
     echo "🚀 Starting Nginx on public port $PUBLIC_PORT..."
     # Dynamically set the listening port in the Nginx config
-    sed "s/listen 8080;/listen ${PUBLIC_PORT};/" "$NGINX_CONFIG_TEMPLATE" > "$TEMP_NGINX_CONFIG"
+    sed "s/listen 8080 default_server;/listen ${PUBLIC_PORT} default_server;/" "$NGINX_CONFIG_TEMPLATE" > "$TEMP_NGINX_CONFIG"
     nginx -c "$TEMP_NGINX_CONFIG" -g "error_log ${NGINX_LOG_FILE} warn;"
 fi
 
