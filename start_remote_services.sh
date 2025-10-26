@@ -24,6 +24,7 @@ WORKSPACE_DIR="/workspace"
 REPO_DIR="$WORKSPACE_DIR/runpod-babylegs"
 VENV_PATH="$REPO_DIR/vesper_env/bin/activate"
 CONFIG_FILE="$REPO_DIR/vesper.conf"
+CONFIG_EXAMPLE_FILE="$REPO_DIR/vesper.conf.example"
 LLAMA_SERVER_PATH="$REPO_DIR/llama.cpp/build/bin/llama-server"
 LLAMA_CPP_DIR="$REPO_DIR/llama.cpp"
 RAG_SCRIPT_PATH="$REPO_DIR/build_memory.py"
@@ -51,21 +52,44 @@ pre_flight_checks() {
     local all_checks_passed=true
 
     if [ ! -d "$REPO_DIR" ]; then
-        echo "❌ CRITICAL: Repository directory not found at $REPO_DIR." >&2; all_checks_passed=false
+        echo "❌ CRITICAL: Repository directory not found at $REPO_DIR." >&2
+        all_checks_passed=false
     fi
     if [ ! -f "$VENV_PATH" ]; then
-        echo "❌ CRITICAL: Python venv not found at $VENV_PATH." >&2; all_checks_passed=false
-    fi
-    if [ ! -f "$CONFIG_FILE" ]; then
-        echo "❌ CRITICAL: Config file not found at $CONFIG_FILE." >&2; all_checks_passed=false
+        echo "❌ CRITICAL: Python venv not found at $VENV_PATH." >&2
+        all_checks_passed=false
     fi
     if [ ! -f "$NGINX_CONFIG_TEMPLATE" ]; then
-        echo "❌ CRITICAL: Nginx config template not found at $NGINX_CONFIG_TEMPLATE." >&2; all_checks_passed=false
+        echo "❌ CRITICAL: Nginx config template not found at $NGINX_CONFIG_TEMPLATE." >&2
+        all_checks_passed=false
     fi
-    source "$CONFIG_FILE"
-    MODEL_PATH_CHECK="${VESPER_MODEL_PATH:-$MODEL_PATH}"
-    if [ ! -f "$MODEL_PATH_CHECK" ]; then
-        echo "❌ CRITICAL: Model file not found at '$MODEL_PATH_CHECK'." >&2; all_checks_passed=false
+
+    # Auto-create vesper.conf from example if it's missing
+    if [ ! -f "$CONFIG_FILE" ]; then
+        echo "🤔 'vesper.conf' not found. Creating from example..."
+        if [ -f "$CONFIG_EXAMPLE_FILE" ]; then
+            cp "$CONFIG_EXAMPLE_FILE" "$CONFIG_FILE"
+            echo "✅ 'vesper.conf' created. Please edit it to set your model path."
+        else
+            echo "❌ CRITICAL: '$CONFIG_EXAMPLE_FILE' not found. Cannot create config." >&2
+            all_checks_passed=false
+        fi
+    fi
+
+    # Source the config file and check the model path
+    if [ -f "$CONFIG_FILE" ]; then
+        source "$CONFIG_FILE"
+        MODEL_PATH_CHECK="${VESPER_MODEL_PATH:-$MODEL_PATH}"
+        if [ ! -f "$MODEL_PATH_CHECK" ]; then
+            echo "❌ CRITICAL: Model file not found at '$MODEL_PATH_CHECK' as defined in '$CONFIG_FILE'." >&2
+            all_checks_passed=false
+        elif [[ "$MODEL_PATH_CHECK" == *"/your_model_name_here.gguf"* ]]; then
+            echo "⚠️ WARNING: The model path in '$CONFIG_FILE' is still set to the default."
+            echo "   Please update it with the correct path to your model file."
+        fi
+    else
+        # This case is handled by the creation step, but is here for safety
+        all_checks_passed=false
     fi
 
     if [ "$all_checks_passed" = false ]; then

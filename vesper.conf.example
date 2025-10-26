@@ -1,0 +1,27 @@
+# ==============================================================================
+# Vesper Configuration File (.conf)
+#
+# Instructions:
+# 1. This file contains the primary settings for the LLM server.
+# 2. Do not use quotes around values.
+# 3. For the model path, provide the full, absolute path to the GGUF file.
+# ==============================================================================
+
+# --- Model Configuration ---
+# The full path to the GGUF model file on the pod's filesystem.
+# Example: /workspace/runpod-babylegs/models/Huihui-gpt-oss-120b-BF16-abliterated.Q4_K_M.gguf
+VESPER_MODEL_PATH="/workspace/runpod-babylegs/models/your_model_name_here.gguf"
+
+# --- Performance Tuning ---
+# Number of model layers to offload to the GPU.
+# This is highly dependent on your specific GPU's VRAM.
+# - For an 80GB card, a value of 120 is a good starting point.
+# - For a 48GB card, try a value around 75.
+# Increase this value until you get "out of memory" errors, then reduce it slightly.
+GPU_LAYERS=120
+
+# The size of the model's context window (in tokens).
+# A smaller context window is generally recommended when using the RAG server,
+# as the RAG system will provide the necessary context for each query.
+# A value of 4096 is a safe and effective starting point.
+CONTEXT_SIZE=4096

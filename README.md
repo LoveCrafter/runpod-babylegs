@@ -67,7 +67,7 @@ After running the script, it will start all services on the remote pod and strea
 
 ## Mobile Access with Termius (One-Tap Launch)
 
-For a seamless mobile experience, you can use Termius's built-in features to launch and connect to the pod with a single tap. This method is more robust and reliable.
+For a seamless mobile experience, you can use Termius's built-in features to launch and connect to the pod with a single tap. This method is the recommended way to interact with the pod, as it ensures your code is always up-to-date.
 
 ### One-Time Setup in Termius
 
@@ -85,7 +85,7 @@ For a seamless mobile experience, you can use Termius's built-in features to lau
 3.  **Create and Assign a Startup Snippet:**
     *   Go to the "Snippets" section and create a new snippet with the following command:
         ```bash
-        /workspace/runpod-babylegs/start_remote_services.sh
+        /workspace/runpod-babylegs/termius_launch.sh
         ```
     *   Go back to your Host settings.
     *   Under the "Startup Snippet" option, select the snippet you just created.
@@ -95,6 +95,8 @@ For a seamless mobile experience, you can use Termius's built-in features to lau
 Now, simply tap on the "Vesper Pod" host in Termius. It will automatically:
 1.  Establish the SSH connection.
 2.  Activate the port forwarding rule you created.
-3.  Run the startup snippet on the remote pod, which ensures the RAG and LLM servers are running in the background.
+3.  Run the startup snippet, which will:
+    *   **Sync the Code:** Pull the latest changes from the `master` branch on GitHub.
+    *   **Launch Services:** Start the RAG and LLM servers in the background.
 
 Once connected, you can open a browser on your phone and navigate to `http://localhost:8080` to interact with the model. The Termius session must remain active in the background.

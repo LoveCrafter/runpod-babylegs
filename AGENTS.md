@@ -73,7 +73,7 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
 
 - **Execution Command:** The `start_remote_services.sh` script is the single source of truth for launching all services, including the Nginx reverse proxy.
 - **Desktop (Local Machine):** The `start_services.sh` and `start_services.ps1` scripts connect to the pod and execute `start_remote_services.sh --foreground-llm` to stream logs to the user's terminal.
-- **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute `start_remote_services.sh` on the remote pod.
+- **Mobile (via Termius):** The mobile workflow uses Termius's built-in port forwarding and a startup snippet to execute `termius_launch.sh` on the remote pod. This script handles `git pull` and then executes `start_remote_services.sh`.
 
 ---
 
