@@ -65,7 +65,7 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
     - Requests to `/rag/*` are forwarded to the RAG server.
     - All other requests are forwarded to the `llama-server`.
 - **Configuration Files:**
-    - `vesper.conf`: Contains settings for the `llama-server` (GPU layers, context size, etc.). Created by copying `vesper.conf.example`.
+    - `vesper.conf`: Contains settings for the `llama-server`. Note that `CONTEXT_SIZE` is dynamically calculated at runtime based on VRAM; the value here acts as a fallback. Created by copying `vesper.conf.example`.
     - `nginx.conf`: The template for the Nginx reverse proxy configuration.
 - **Applying Changes:** To restart all services (e.g., after changing `vesper.conf`), connect to the pod and run `./start_remote_services.sh --restart`.
 

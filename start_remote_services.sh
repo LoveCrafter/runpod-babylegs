@@ -137,6 +137,24 @@ source "$CONFIG_FILE"
 MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
 source "$VENV_PATH"
 
+# --- Dynamic Context Calculation ---
+CALC_SCRIPT="$REPO_DIR/calculate_context.py"
+if [ -f "$CALC_SCRIPT" ]; then
+    echo "🧮 Calculating optimal context size based on VRAM..."
+    # Run the python script, capturing stdout. Stderr goes to terminal.
+    CALCULATED_CTX=$(python3 "$CALC_SCRIPT" "$MODEL_PATH")
+    RET_CODE=$?
+
+    if [ $RET_CODE -eq 0 ] && [[ "$CALCULATED_CTX" =~ ^[0-9]+$ ]]; then
+        echo "✅ Dynamic Context Size: $CALCULATED_CTX (Overrides config: $CONTEXT_SIZE)"
+        CONTEXT_SIZE="$CALCULATED_CTX"
+    else
+        echo "⚠️  Context calculation failed. Using config value: $CONTEXT_SIZE"
+    fi
+else
+    echo "⚠️  Calculation script not found. Using config value: $CONTEXT_SIZE"
+fi
+
 # --- Auto-clone and Auto-compile llama-server ---
 if [ ! -d "$LLAMA_CPP_DIR/.git" ]; then
     echo "🛠️ 'llama.cpp' source not found. Cloning from upstream..."
