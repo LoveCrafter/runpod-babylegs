@@ -137,12 +137,41 @@ source "$CONFIG_FILE"
 MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
 source "$VENV_PATH"
 
-# --- Auto-compile llama-server if it doesn't exist ---
+# --- Dynamic Context Calculation ---
+CALC_SCRIPT="$REPO_DIR/calculate_context.py"
+if [ -f "$CALC_SCRIPT" ]; then
+    echo "🧮 Calculating optimal context size based on VRAM..."
+    # Run the python script, capturing stdout. Stderr goes to terminal.
+    CALCULATED_CTX=$(python3 "$CALC_SCRIPT" "$MODEL_PATH")
+    RET_CODE=$?
+
+    if [ $RET_CODE -eq 0 ] && [[ "$CALCULATED_CTX" =~ ^[0-9]+$ ]]; then
+        echo "✅ Dynamic Context Size: $CALCULATED_CTX (Overrides config: $CONTEXT_SIZE)"
+        CONTEXT_SIZE="$CALCULATED_CTX"
+    else
+        echo "⚠️  Context calculation failed. Using config value: $CONTEXT_SIZE"
+    fi
+else
+    echo "⚠️  Calculation script not found. Using config value: $CONTEXT_SIZE"
+fi
+
+# --- Auto-clone and Auto-compile llama-server ---
+if [ ! -d "$LLAMA_CPP_DIR/.git" ]; then
+    echo "🛠️ 'llama.cpp' source not found. Cloning from upstream..."
+    # If directory exists but isn't a git repo (e.g. empty dir), remove it to allow clone
+    if [ -d "$LLAMA_CPP_DIR" ]; then rm -rf "$LLAMA_CPP_DIR"; fi
+    git clone https://github.com/ggerganov/llama.cpp "$LLAMA_CPP_DIR"
+fi
+
 if [ ! -f "$LLAMA_SERVER_PATH" ]; then
-    echo "🛠️ 'llama-server' not found. Compiling with CMake..."
-    cd "$LLAMA_CPP_DIR"; mkdir -p build; cd build
-    cmake .. && cmake --build .
-    echo "✅ Compilation complete."; cd "$REPO_DIR"
+    echo "🛠️ 'llama-server' binary not found. Compiling with CMake..."
+    cd "$LLAMA_CPP_DIR"
+    mkdir -p build
+    cd build
+    cmake ..
+    cmake --build . --config Release -j$(nproc)
+    echo "✅ Compilation complete."
+    cd "$REPO_DIR"
 fi
 
 # --- Check and start RAG Memory Server ---
@@ -165,6 +194,11 @@ if is_running $INTERNAL_LLAMA_PORT; then
     echo "✅ Main LLM Server is already running on internal port $INTERNAL_LLAMA_PORT."
 else
     echo "🧠 Launching LLM Server on internal port $INTERNAL_LLAMA_PORT..."
+
+    # Detect GPU count for auto-optimization
+    GPU_COUNT=$(nvidia-smi -L 2>/dev/null | wc -l)
+    echo "🔍 Detected $GPU_COUNT GPU(s)."
+
     LLM_COMMAND_ARGS=(
         --model "$MODEL_PATH"
         --n-gpu-layers "$GPU_LAYERS"
@@ -172,6 +206,12 @@ else
         --host "127.0.0.1"
         --port "$INTERNAL_LLAMA_PORT"
     )
+
+    if [ "$GPU_COUNT" -gt 1 ]; then
+        echo "⚡ Multi-GPU detected! Enabling split-mode row."
+        LLM_COMMAND_ARGS+=(--split-mode row)
+    fi
+
     nohup "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}" > "$LLAMA_LOG_FILE" 2>&1 &
 fi
 
