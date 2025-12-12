@@ -36,14 +36,53 @@ PUBLIC_PORT="${RUNPOD_TCP_PORT_8080:-8080}"
 INTERNAL_RAG_PORT=5000
 INTERNAL_LLAMA_PORT=8081
 
+# --- OpenWebUI Defaults ---
+ENABLE_OPENWEBUI="${ENABLE_OPENWEBUI:-false}"
+OPENWEBUI_PORT="${OPENWEBUI_PORT:-3000}"
+OPENWEBUI_DATA_DIR="$WORKSPACE_DIR/open-webui-data"
+
 # --- Log File Configuration ---
 RAG_LOG_FILE="$WORKSPACE_DIR/rag_server.log"
 LLAMA_LOG_FILE="$WORKSPACE_DIR/llama_server.log"
+OPENWEBUI_LOG_FILE="$WORKSPACE_DIR/open-webui.log"
 NGINX_LOG_FILE="$WORKSPACE_DIR/nginx.log"
 
 # --- Function Definitions ---
 is_running() {
   lsof -i tcp:"$1" -sTCP:LISTEN -P -n >/dev/null 2>&1
+}
+
+setup_tailscale() {
+    if [ -n "$TAILSCALE_AUTH_KEY" ]; then
+        echo "🔌 Tailscale configuration detected."
+
+        # 1. Install Tailscale if missing
+        if ! command -v tailscale &> /dev/null; then
+            echo "⬇️  Installing Tailscale..."
+            curl -fsSL https://tailscale.com/install.sh | sh
+        fi
+
+        # 2. Start tailscaled if not running
+        if ! pgrep tailscaled > /dev/null; then
+             echo "⚙️  Starting tailscaled manually..."
+             # Ensure directories exist
+             mkdir -p /var/run/tailscale /var/lib/tailscale
+             # Start daemon in userspace networking mode (best for containers)
+             tailscaled --state=/var/lib/tailscale/tailscaled.state \
+                        --socket=/var/run/tailscale/tailscaled.sock \
+                        --tun=userspace-networking &
+             sleep 3
+        fi
+
+        # 3. Authenticate
+        TAILSCALE_HOSTNAME="${TAILSCALE_HOSTNAME:-vesper-pod}"
+        echo "🔗 Connecting to Tailscale as '$TAILSCALE_HOSTNAME'..."
+        # --ssh enables Tailscale SSH access
+        tailscale up --authkey="$TAILSCALE_AUTH_KEY" --hostname="$TAILSCALE_HOSTNAME" --ssh --accept-routes
+
+        TS_IP=$(tailscale ip -4)
+        echo "✅ Tailscale connected. You can SSH to: root@$TS_IP"
+    fi
 }
 
 pre_flight_checks() {
@@ -105,6 +144,7 @@ stop_all_services() {
     stop_service_on_port "$PUBLIC_PORT" "Nginx"
     stop_service_on_port "$INTERNAL_RAG_PORT" "RAG Server"
     stop_service_on_port "$INTERNAL_LLAMA_PORT" "LLM Server"
+    stop_service_on_port "$OPENWEBUI_PORT" "OpenWebUI"
 }
 
 # --- Dependency & Configuration Checks ---
@@ -154,6 +194,9 @@ if [ -f "$CALC_SCRIPT" ]; then
 else
     echo "⚠️  Calculation script not found. Using config value: $CONTEXT_SIZE"
 fi
+
+# --- Setup Tailscale (Optional) ---
+setup_tailscale
 
 # --- Auto-clone and Auto-compile llama-server ---
 if [ ! -d "$LLAMA_CPP_DIR/.git" ]; then
@@ -215,6 +258,37 @@ else
     nohup "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}" > "$LLAMA_LOG_FILE" 2>&1 &
 fi
 
+# --- Check and start OpenWebUI (Optional) ---
+if [ "$ENABLE_OPENWEBUI" = "true" ]; then
+    if is_running "$OPENWEBUI_PORT"; then
+        echo "✅ OpenWebUI is already running on port $OPENWEBUI_PORT."
+    else
+        echo "🌐 Starting OpenWebUI on port $OPENWEBUI_PORT..."
+        mkdir -p "$OPENWEBUI_DATA_DIR"
+
+        # OpenWebUI Environment Variables
+        export PORT="$OPENWEBUI_PORT"
+        export DATA_DIR="$OPENWEBUI_DATA_DIR"
+        export OPENAI_API_BASE_URL="http://127.0.0.1:$INTERNAL_LLAMA_PORT/v1"
+        export OPENAI_API_KEY="sk-no-key-required"
+        # Prevent auto-opening browser
+        export WEBUI_AUTH="True"
+
+        nohup open-webui serve > "$OPENWEBUI_LOG_FILE" 2>&1 &
+
+        # Wait for OpenWebUI to start (it can be slow)
+        echo "⏳ Waiting for OpenWebUI to initialize..."
+        SECONDS=0
+        while ! is_running "$OPENWEBUI_PORT"; do
+            if [ $SECONDS -ge 60 ]; then
+                echo "⚠️  OpenWebUI taking a long time to start. Check $OPENWEBUI_LOG_FILE. Continuing..."
+                break
+            fi
+            sleep 1
+        done
+    fi
+fi
+
 # --- Check and start Nginx Reverse Proxy ---
 if is_running $PUBLIC_PORT; then
     echo "✅ Nginx is already running on public port $PUBLIC_PORT."
@@ -222,6 +296,13 @@ else
     echo "🚀 Starting Nginx on public port $PUBLIC_PORT..."
     # Dynamically set the listening port in the Nginx config
     sed "s/listen 8080 default_server;/listen ${PUBLIC_PORT} default_server;/" "$NGINX_CONFIG_TEMPLATE" > "$TEMP_NGINX_CONFIG"
+
+    # If OpenWebUI is enabled, hijack the root route upstream
+    if [ "$ENABLE_OPENWEBUI" = "true" ]; then
+        echo "🔀 Routing public traffic to OpenWebUI..."
+        sed -i "s/server 127.0.0.1:$INTERNAL_LLAMA_PORT;/server 127.0.0.1:$OPENWEBUI_PORT;/" "$TEMP_NGINX_CONFIG"
+    fi
+
     nginx -c "$TEMP_NGINX_CONFIG" -g "error_log ${NGINX_LOG_FILE} warn;"
 fi
 
