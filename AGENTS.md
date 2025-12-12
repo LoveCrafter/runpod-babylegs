@@ -52,8 +52,8 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
     pip install -r requirements.txt
     ```
 
-5.  **Compile `llama-server`:**
-    - The `start_remote_services.sh` script handles this automatically.
+5.  **Install & Compile `llama-server`:**
+    - The `start_remote_services.sh` script automatically clones `llama.cpp` (if missing) and compiles the server. It also detects multi-GPU setups and applies optimization flags (`--split-mode row`) automatically.
 
 ### 2.3. Service Configuration & Architecture
 
@@ -65,7 +65,7 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
     - Requests to `/rag/*` are forwarded to the RAG server.
     - All other requests are forwarded to the `llama-server`.
 - **Configuration Files:**
-    - `vesper.conf`: Contains settings for the `llama-server` (GPU layers, context size, etc.).
+    - `vesper.conf`: Contains settings for `llama-server` and OpenWebUI. Set `ENABLE_OPENWEBUI=true` to switch the public interface.
     - `nginx.conf`: The template for the Nginx reverse proxy configuration.
 - **Applying Changes:** To restart all services (e.g., after changing `vesper.conf`), connect to the pod and run `./start_remote_services.sh --restart`.
 
@@ -130,4 +130,3 @@ When proposing a code change, await the "Architect's Review." If the user asks y
 - **Introduce Automated Testing:** Implement a `pytest` environment. Tests must be CPU-runnable to conserve VRAM.
 - **Centralize Configuration:** Move hardcoded parameters from scripts into a single `.env` or `config.yaml` file.
 - **Document Project History & Decisions:** Create a dedicated document covering the project's history, major bug fixes, and architectural decisions.
-- **Fix `llama.cpp` Submodule (Low Priority):** Investigate the broken `llama.cpp` submodule integration.

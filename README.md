@@ -27,9 +27,9 @@ Before running the local startup scripts, ensure the following steps have been c
 
 ### Configuring the Services
 
-All key parameters for the model, such as the number of GPU layers and the context size, are controlled via the `vesper.conf` file.
+All key parameters for the model are controlled via the `vesper.conf` file. Note that the **Context Size** is automatically calculated at startup to maximize usage of the available VRAM (e.g., using a single H100 vs. dual H100s). The `CONTEXT_SIZE` in the config file serves as a fallback.
 
-1.  **Edit the Configuration:** Open the `vesper.conf` file and adjust the values as needed.
+1.  **Edit the Configuration:** Copy `vesper.conf.example` to `vesper.conf` (if it doesn't exist), then open `vesper.conf` and adjust the values as needed.
 2.  **Apply the Changes:** To apply your new settings, you must restart the LLM server. You can do this without rebooting the pod. Simply SSH into the pod and run the following command from the repository root:
     ```bash
     ./start_remote_services.sh --restart-llm
@@ -62,6 +62,16 @@ Open your terminal, navigate to the project directory, and run the following com
     *Example:* `.\start_services.ps1 -PodIp 216.81.245.97 -PodPort 11114`
 
 After running the script, it will start all services on the remote pod and stream the `llama-server` logs to your terminal. You will then need to open a **second terminal** to create an SSH tunnel to access the model.
+
+### Optional: Upgrade to OpenWebUI
+
+You can optionally enable **OpenWebUI**, a modern, ChatGPT-like interface.
+
+1.  Open `vesper.conf`.
+2.  Set `ENABLE_OPENWEBUI=true`.
+3.  Restart services (`./start_remote_services.sh --restart`).
+
+The system will now serve the OpenWebUI interface on the same port (`8080`), so your existing connection methods (Termius, SSH tunnel) work exactly the same. To revert to the classic interface, set `ENABLE_OPENWEBUI=false`.
 
 ---
 

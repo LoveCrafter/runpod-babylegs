@@ -36,9 +36,15 @@ PUBLIC_PORT="${RUNPOD_TCP_PORT_8080:-8080}"
 INTERNAL_RAG_PORT=5000
 INTERNAL_LLAMA_PORT=8081
 
+# --- OpenWebUI Defaults ---
+ENABLE_OPENWEBUI="${ENABLE_OPENWEBUI:-false}"
+OPENWEBUI_PORT="${OPENWEBUI_PORT:-3000}"
+OPENWEBUI_DATA_DIR="$WORKSPACE_DIR/open-webui-data"
+
 # --- Log File Configuration ---
 RAG_LOG_FILE="$WORKSPACE_DIR/rag_server.log"
 LLAMA_LOG_FILE="$WORKSPACE_DIR/llama_server.log"
+OPENWEBUI_LOG_FILE="$WORKSPACE_DIR/open-webui.log"
 NGINX_LOG_FILE="$WORKSPACE_DIR/nginx.log"
 
 # --- Function Definitions ---
@@ -105,6 +111,7 @@ stop_all_services() {
     stop_service_on_port "$PUBLIC_PORT" "Nginx"
     stop_service_on_port "$INTERNAL_RAG_PORT" "RAG Server"
     stop_service_on_port "$INTERNAL_LLAMA_PORT" "LLM Server"
+    stop_service_on_port "$OPENWEBUI_PORT" "OpenWebUI"
 }
 
 # --- Dependency & Configuration Checks ---
@@ -137,12 +144,41 @@ source "$CONFIG_FILE"
 MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
 source "$VENV_PATH"
 
-# --- Auto-compile llama-server if it doesn't exist ---
+# --- Dynamic Context Calculation ---
+CALC_SCRIPT="$REPO_DIR/calculate_context.py"
+if [ -f "$CALC_SCRIPT" ]; then
+    echo "🧮 Calculating optimal context size based on VRAM..."
+    # Run the python script, capturing stdout. Stderr goes to terminal.
+    CALCULATED_CTX=$(python3 "$CALC_SCRIPT" "$MODEL_PATH")
+    RET_CODE=$?
+
+    if [ $RET_CODE -eq 0 ] && [[ "$CALCULATED_CTX" =~ ^[0-9]+$ ]]; then
+        echo "✅ Dynamic Context Size: $CALCULATED_CTX (Overrides config: $CONTEXT_SIZE)"
+        CONTEXT_SIZE="$CALCULATED_CTX"
+    else
+        echo "⚠️  Context calculation failed. Using config value: $CONTEXT_SIZE"
+    fi
+else
+    echo "⚠️  Calculation script not found. Using config value: $CONTEXT_SIZE"
+fi
+
+# --- Auto-clone and Auto-compile llama-server ---
+if [ ! -d "$LLAMA_CPP_DIR/.git" ]; then
+    echo "🛠️ 'llama.cpp' source not found. Cloning from upstream..."
+    # If directory exists but isn't a git repo (e.g. empty dir), remove it to allow clone
+    if [ -d "$LLAMA_CPP_DIR" ]; then rm -rf "$LLAMA_CPP_DIR"; fi
+    git clone https://github.com/ggerganov/llama.cpp "$LLAMA_CPP_DIR"
+fi
+
 if [ ! -f "$LLAMA_SERVER_PATH" ]; then
-    echo "🛠️ 'llama-server' not found. Compiling with CMake..."
-    cd "$LLAMA_CPP_DIR"; mkdir -p build; cd build
-    cmake .. && cmake --build .
-    echo "✅ Compilation complete."; cd "$REPO_DIR"
+    echo "🛠️ 'llama-server' binary not found. Compiling with CMake..."
+    cd "$LLAMA_CPP_DIR"
+    mkdir -p build
+    cd build
+    cmake ..
+    cmake --build . --config Release -j$(nproc)
+    echo "✅ Compilation complete."
+    cd "$REPO_DIR"
 fi
 
 # --- Check and start RAG Memory Server ---
@@ -165,6 +201,11 @@ if is_running $INTERNAL_LLAMA_PORT; then
     echo "✅ Main LLM Server is already running on internal port $INTERNAL_LLAMA_PORT."
 else
     echo "🧠 Launching LLM Server on internal port $INTERNAL_LLAMA_PORT..."
+
+    # Detect GPU count for auto-optimization
+    GPU_COUNT=$(nvidia-smi -L 2>/dev/null | wc -l)
+    echo "🔍 Detected $GPU_COUNT GPU(s)."
+
     LLM_COMMAND_ARGS=(
         --model "$MODEL_PATH"
         --n-gpu-layers "$GPU_LAYERS"
@@ -172,7 +213,44 @@ else
         --host "127.0.0.1"
         --port "$INTERNAL_LLAMA_PORT"
     )
+
+    if [ "$GPU_COUNT" -gt 1 ]; then
+        echo "⚡ Multi-GPU detected! Enabling split-mode row."
+        LLM_COMMAND_ARGS+=(--split-mode row)
+    fi
+
     nohup "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}" > "$LLAMA_LOG_FILE" 2>&1 &
+fi
+
+# --- Check and start OpenWebUI (Optional) ---
+if [ "$ENABLE_OPENWEBUI" = "true" ]; then
+    if is_running "$OPENWEBUI_PORT"; then
+        echo "✅ OpenWebUI is already running on port $OPENWEBUI_PORT."
+    else
+        echo "🌐 Starting OpenWebUI on port $OPENWEBUI_PORT..."
+        mkdir -p "$OPENWEBUI_DATA_DIR"
+
+        # OpenWebUI Environment Variables
+        export PORT="$OPENWEBUI_PORT"
+        export DATA_DIR="$OPENWEBUI_DATA_DIR"
+        export OPENAI_API_BASE_URL="http://127.0.0.1:$INTERNAL_LLAMA_PORT/v1"
+        export OPENAI_API_KEY="sk-no-key-required"
+        # Prevent auto-opening browser
+        export WEBUI_AUTH="True"
+
+        nohup open-webui serve > "$OPENWEBUI_LOG_FILE" 2>&1 &
+
+        # Wait for OpenWebUI to start (it can be slow)
+        echo "⏳ Waiting for OpenWebUI to initialize..."
+        SECONDS=0
+        while ! is_running "$OPENWEBUI_PORT"; do
+            if [ $SECONDS -ge 60 ]; then
+                echo "⚠️  OpenWebUI taking a long time to start. Check $OPENWEBUI_LOG_FILE. Continuing..."
+                break
+            fi
+            sleep 1
+        done
+    fi
 fi
 
 # --- Check and start Nginx Reverse Proxy ---
@@ -182,6 +260,13 @@ else
     echo "🚀 Starting Nginx on public port $PUBLIC_PORT..."
     # Dynamically set the listening port in the Nginx config
     sed "s/listen 8080 default_server;/listen ${PUBLIC_PORT} default_server;/" "$NGINX_CONFIG_TEMPLATE" > "$TEMP_NGINX_CONFIG"
+
+    # If OpenWebUI is enabled, hijack the root route upstream
+    if [ "$ENABLE_OPENWEBUI" = "true" ]; then
+        echo "🔀 Routing public traffic to OpenWebUI..."
+        sed -i "s/server 127.0.0.1:$INTERNAL_LLAMA_PORT;/server 127.0.0.1:$OPENWEBUI_PORT;/" "$TEMP_NGINX_CONFIG"
+    fi
+
     nginx -c "$TEMP_NGINX_CONFIG" -g "error_log ${NGINX_LOG_FILE} warn;"
 fi
 

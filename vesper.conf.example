@@ -1,0 +1,26 @@
+# vesper.conf.example
+# ==============================================================================
+# Vesper Configuration File
+# Copy this file to 'vesper.conf' and adjust the values for your environment.
+# ==============================================================================
+
+# Path to the GGUF model file.
+# Default assumes the model is downloaded to the 'models' directory in the repo.
+VESPER_MODEL_PATH="/workspace/runpod-babylegs/models/Huihui-gpt-oss-120b-BF16-abliterated.gguf"
+
+# Number of layers to offload to the GPU.
+# Set to a high number (e.g., 999) to offload all layers.
+GPU_LAYERS=999
+
+# Context size (n_ctx).
+# Adjust based on available VRAM. 8192 or 16384 are common starting points.
+CONTEXT_SIZE=8192
+
+# OpenWebUI Configuration
+# Enable the OpenWebUI interface (true/false).
+# If true, the public port (8080) will route to OpenWebUI.
+# If false, it routes to the standard llama-server UI.
+ENABLE_OPENWEBUI=false
+
+# Internal port for OpenWebUI (default 3000).
+OPENWEBUI_PORT=3000
