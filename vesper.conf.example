@@ -15,3 +15,22 @@ GPU_LAYERS=999
 # Context size (n_ctx).
 # Adjust based on available VRAM. 8192 or 16384 are common starting points.
 CONTEXT_SIZE=8192
+
+# OpenWebUI Configuration
+# Enable the OpenWebUI interface (true/false).
+# If true, the public port (8080) will route to OpenWebUI.
+# If false, it routes to the standard llama-server UI.
+ENABLE_OPENWEBUI=false
+
+# Internal port for OpenWebUI (default 3000).
+OPENWEBUI_PORT=3000
+
+# Tailscale Configuration (Optional)
+# To maintain a stable IP address (useful for Spot instances), provide a Tailscale Auth Key.
+# 1. Go to https://login.tailscale.com/admin/settings/keys
+# 2. Generate an Ephemeral key (if you want it to clean up automatically) or a Reusable key.
+# 3. Paste it below.
+# TAILSCALE_AUTH_KEY=tskey-auth-xxxxx-yyyyy
+
+# Hostname for the pod in your Tailscale network.
+TAILSCALE_HOSTNAME=vesper-pod
