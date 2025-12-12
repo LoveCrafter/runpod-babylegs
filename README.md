@@ -73,6 +73,17 @@ You can optionally enable **OpenWebUI**, a modern, ChatGPT-like interface.
 
 The system will now serve the OpenWebUI interface on the same port (`8080`), so your existing connection methods (Termius, SSH tunnel) work exactly the same. To revert to the classic interface, set `ENABLE_OPENWEBUI=false`.
 
+### Persistent Access with Tailscale
+
+If you use Spot Instances, your IP address changes every time the pod restarts. To solve this, you can use **Tailscale** to create a persistent hostname.
+
+1.  Create a Tailscale account and generate an **Auth Key** from the Admin Console.
+2.  Open `vesper.conf`.
+3.  Add `TAILSCALE_AUTH_KEY=tskey-auth-xxxxx`.
+4.  Restart services.
+
+The pod will automatically join your Tailscale network as `vesper-pod` (or whatever you set in `TAILSCALE_HOSTNAME`). You can then SSH to it using the Tailscale IP (e.g., `100.x.y.z`) regardless of the pod's public IP.
+
 ---
 
 ## Mobile Access with Termius (One-Tap Launch)

@@ -24,3 +24,13 @@ ENABLE_OPENWEBUI=false
 
 # Internal port for OpenWebUI (default 3000).
 OPENWEBUI_PORT=3000
+
+# Tailscale Configuration (Optional)
+# To maintain a stable IP address (useful for Spot instances), provide a Tailscale Auth Key.
+# 1. Go to https://login.tailscale.com/admin/settings/keys
+# 2. Generate an Ephemeral key (if you want it to clean up automatically) or a Reusable key.
+# 3. Paste it below.
+# TAILSCALE_AUTH_KEY=tskey-auth-xxxxx-yyyyy
+
+# Hostname for the pod in your Tailscale network.
+TAILSCALE_HOSTNAME=vesper-pod

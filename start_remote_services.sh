@@ -52,6 +52,39 @@ is_running() {
   lsof -i tcp:"$1" -sTCP:LISTEN -P -n >/dev/null 2>&1
 }
 
+setup_tailscale() {
+    if [ -n "$TAILSCALE_AUTH_KEY" ]; then
+        echo "🔌 Tailscale configuration detected."
+
+        # 1. Install Tailscale if missing
+        if ! command -v tailscale &> /dev/null; then
+            echo "⬇️  Installing Tailscale..."
+            curl -fsSL https://tailscale.com/install.sh | sh
+        fi
+
+        # 2. Start tailscaled if not running
+        if ! pgrep tailscaled > /dev/null; then
+             echo "⚙️  Starting tailscaled manually..."
+             # Ensure directories exist
+             mkdir -p /var/run/tailscale /var/lib/tailscale
+             # Start daemon in userspace networking mode (best for containers)
+             tailscaled --state=/var/lib/tailscale/tailscaled.state \
+                        --socket=/var/run/tailscale/tailscaled.sock \
+                        --tun=userspace-networking &
+             sleep 3
+        fi
+
+        # 3. Authenticate
+        TAILSCALE_HOSTNAME="${TAILSCALE_HOSTNAME:-vesper-pod}"
+        echo "🔗 Connecting to Tailscale as '$TAILSCALE_HOSTNAME'..."
+        # --ssh enables Tailscale SSH access
+        tailscale up --authkey="$TAILSCALE_AUTH_KEY" --hostname="$TAILSCALE_HOSTNAME" --ssh --accept-routes
+
+        TS_IP=$(tailscale ip -4)
+        echo "✅ Tailscale connected. You can SSH to: root@$TS_IP"
+    fi
+}
+
 pre_flight_checks() {
     echo "--- Running Pre-flight Checks ---"
     local all_checks_passed=true
@@ -161,6 +194,9 @@ if [ -f "$CALC_SCRIPT" ]; then
 else
     echo "⚠️  Calculation script not found. Using config value: $CONTEXT_SIZE"
 fi
+
+# --- Setup Tailscale (Optional) ---
+setup_tailscale
 
 # --- Auto-clone and Auto-compile llama-server ---
 if [ ! -d "$LLAMA_CPP_DIR/.git" ]; then
