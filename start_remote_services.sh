@@ -96,7 +96,12 @@ pre_flight_checks() {
         echo "❌ CRITICAL: Python venv not found at $VENV_PATH." >&2; all_checks_passed=false
     fi
     if [ ! -f "$CONFIG_FILE" ]; then
-        echo "❌ CRITICAL: Config file not found at $CONFIG_FILE." >&2; all_checks_passed=false
+        if [ -f "$REPO_DIR/vesper.conf.example" ]; then
+            echo "⚠️  Config file not found. Creating '$CONFIG_FILE' from example..."
+            cp "$REPO_DIR/vesper.conf.example" "$CONFIG_FILE"
+        else
+            echo "❌ CRITICAL: Config file not found at $CONFIG_FILE." >&2; all_checks_passed=false
+        fi
     fi
     if [ ! -f "$NGINX_CONFIG_TEMPLATE" ]; then
         echo "❌ CRITICAL: Nginx config template not found at $NGINX_CONFIG_TEMPLATE." >&2; all_checks_passed=false
@@ -222,6 +227,17 @@ if is_running $INTERNAL_RAG_PORT; then
     echo "✅ RAG Server is already running on internal port $INTERNAL_RAG_PORT."
 else
     echo "🧠 Starting RAG Server on internal port $INTERNAL_RAG_PORT..."
+
+    # Security: Generate a random API secret if one isn't provided
+    if [ -z "$API_SECRET" ]; then
+        echo "🔑 Generating ephemeral API Secret for RAG Server..."
+        export API_SECRET=$(openssl rand -hex 32)
+    fi
+
+    # Optimization: Force RAG to CPU to reserve VRAM for the 120B model
+    echo "🔧 Forcing RAG embeddings to CPU to save VRAM..."
+    export RAG_DEVICE="cpu"
+
     nohup python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
     echo "⏳ Waiting for RAG server to become healthy..."
     SECONDS=0

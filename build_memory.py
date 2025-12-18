@@ -39,7 +39,7 @@ LANCEDB_PATH     = os.getenv("LANCEDB_PATH", "memory.lancedb")
 CHUNK_TOKENS     = int(os.getenv("CHUNK_TOKENS", "5500"))
 # Upgraded embedding model for best performance in 2025
 EMBED_MODEL_NAME = "BAAI/bge-large-en-v1.5"
-EMBED_DEVICE     = "cuda" if torch.cuda.is_available() else "cpu"
+EMBED_DEVICE     = os.getenv("RAG_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
 
 # --- API Configuration ---
 API_HOST         = "0.0.0.0"
