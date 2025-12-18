@@ -177,6 +177,48 @@ def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = Header(..., descript
 
     return {"query": query, "results": search_results}
 
+class MemoryMessage(BaseModel):
+    role: str
+    content: str
+    timestamp: float | None = None
+
+class AddMemoryRequest(BaseModel):
+    messages: list[MemoryMessage]
+
+@app.post("/add")
+def add_memory(request: AddMemoryRequest, token: str = Header(..., description="API secret token")):
+    verify_token(token)
+
+    if not request.messages:
+         raise HTTPException(status_code=400, detail="No messages provided.")
+
+    if state.table is None:
+        raise HTTPException(status_code=503, detail="Memory database not ready.")
+
+    # 1. Prepare messages
+    msgs = []
+    for m in request.messages:
+        ts = m.timestamp if m.timestamp is not None else datetime.now(timezone.utc).timestamp()
+        msgs.append({"role": m.role, "timestamp": ts, "content": m.content})
+
+    # 2. Chunk
+    # We reuse the existing chunking logic which formats them nicely
+    chunks = split_into_chunks(msgs, state.embedder.tokenizer)
+
+    if not chunks:
+        return {"status": "ok", "added": 0, "message": "No chunks created (content too short?)"}
+
+    # 3. Embed
+    print(f"[+] Embedding {len(chunks)} new chunks...")
+    vectors = state.embedder.encode(chunks, batch_size=32, show_progress_bar=False, normalize_embeddings=True)
+
+    # 4. Insert
+    print(f"[+] Inserting into LanceDB...")
+    data = [{"vector": v.tolist(), "text": t} for v, t in zip(vectors, chunks)]
+    state.table.add(data)
+
+    return {"status": "ok", "added": len(data)}
+
 @app.get("/")
 def health_check():
     num_chunks = len(state.table) if state.table is not None else 0
