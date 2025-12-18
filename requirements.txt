@@ -42,3 +42,4 @@ urllib3==2.5.0
 wheel==0.45.1
 gguf>=0.6.0
 open-webui
+letta

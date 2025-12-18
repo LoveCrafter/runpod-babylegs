@@ -33,7 +33,8 @@ TEMP_NGINX_CONFIG="/tmp/nginx.conf"
 # --- Port Configuration ---
 # Public port exposed by RunPod.
 PUBLIC_PORT="${RUNPOD_TCP_PORT_8080:-8080}"
-INTERNAL_RAG_PORT=5000
+INTERNAL_LETTA_PORT=8283
+INTERNAL_OLLAMA_PORT=11434
 INTERNAL_LLAMA_PORT=8081
 
 # --- OpenWebUI Defaults ---
@@ -147,7 +148,8 @@ stop_service_on_port() {
 stop_all_services() {
     echo "--- Stopping All Services ---"
     stop_service_on_port "$PUBLIC_PORT" "Nginx"
-    stop_service_on_port "$INTERNAL_RAG_PORT" "RAG Server"
+    stop_service_on_port "$INTERNAL_LETTA_PORT" "Letta Server"
+    stop_service_on_port "$INTERNAL_OLLAMA_PORT" "Ollama"
     stop_service_on_port "$INTERNAL_LLAMA_PORT" "LLM Server"
     stop_service_on_port "$OPENWEBUI_PORT" "OpenWebUI"
 }
@@ -222,30 +224,53 @@ if [ ! -f "$LLAMA_SERVER_PATH" ]; then
     cd "$REPO_DIR"
 fi
 
-# --- Check and start RAG Memory Server ---
-if is_running $INTERNAL_RAG_PORT; then
-    echo "✅ RAG Server is already running on internal port $INTERNAL_RAG_PORT."
+# --- Check and start Letta & Ollama (Memory Layer) ---
+if is_running $INTERNAL_LETTA_PORT; then
+    echo "✅ Letta Server is already running on port $INTERNAL_LETTA_PORT."
 else
-    echo "🧠 Starting RAG Server on internal port $INTERNAL_RAG_PORT..."
+    echo "🧠 Initializing Letta Memory System..."
 
-    # Security: Generate a random API secret if one isn't provided
-    if [ -z "$API_SECRET" ]; then
-        echo "🔑 Generating ephemeral API Secret for RAG Server..."
-        export API_SECRET=$(openssl rand -hex 32)
+    # 1. Install & Start Ollama (Embedding Provider)
+    if ! command -v ollama &> /dev/null; then
+         echo "⬇️  Installing Ollama..."
+         curl -fsSL https://ollama.com/install.sh | sh
     fi
 
-    # Optimization: Force RAG to CPU to reserve VRAM for the 120B model
-    echo "🔧 Forcing RAG embeddings to CPU to save VRAM..."
-    export RAG_DEVICE="cpu"
+    if ! is_running $INTERNAL_OLLAMA_PORT; then
+        echo "🦙 Starting Ollama on CPU (preserving VRAM)..."
+        export OLLAMA_HOST="127.0.0.1:$INTERNAL_OLLAMA_PORT"
+        # Force CPU to save VRAM for the 120B model
+        CUDA_VISIBLE_DEVICES="" nohup ollama serve > "$WORKSPACE_DIR/ollama.log" 2>&1 &
+        echo "⏳ Waiting for Ollama to start..."
+        sleep 5
+    fi
 
-    nohup python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
-    echo "⏳ Waiting for RAG server to become healthy..."
+    # 2. Pull Embedding Model (Lightweight)
+    echo "📥 Ensuring embedding model 'nomic-embed-text' is available..."
+    # Run in background or wait? Pulling is fast-ish. Let's wait to ensure Letta finds it.
+    ollama pull nomic-embed-text > /dev/null 2>&1 || echo "⚠️  Ollama pull failed. Check logs."
+
+    # 3. Start Letta Server
+    echo "🚀 Starting Letta Server on port $INTERNAL_LETTA_PORT..."
+
+    # Configure Letta to use Ollama for embeddings
+    export OLLAMA_BASE_URL="http://127.0.0.1:$INTERNAL_OLLAMA_PORT"
+
+    # Configure Letta to use our Llama Server as the LLM Backend
+    export OPENAI_API_BASE="http://127.0.0.1:$INTERNAL_LLAMA_PORT/v1"
+    export OPENAI_API_KEY="sk-mock-key"
+
+    # Letta Server Settings
+    export LETTA_PORT="$INTERNAL_LETTA_PORT"
+
+    nohup letta server > "$RAG_LOG_FILE" 2>&1 &
+
+    echo "⏳ Waiting for Letta server..."
     SECONDS=0
-    while ! is_running $INTERNAL_RAG_PORT; do
-      if [ $SECONDS -ge 30 ]; then echo "❌ RAG server timed out. Check $RAG_LOG_FILE."; exit 1; fi
+    while ! is_running $INTERNAL_LETTA_PORT; do
+      if [ $SECONDS -ge 60 ]; then echo "⚠️  Letta server taking a while. Check $RAG_LOG_FILE. Continuing..."; break; fi
       sleep 1
     done
-    echo "✅ RAG server is healthy!"
 fi
 
 # --- Check and start Main LLM Server ---
@@ -285,8 +310,9 @@ if [ "$ENABLE_OPENWEBUI" = "true" ]; then
         # OpenWebUI Environment Variables
         export PORT="$OPENWEBUI_PORT"
         export DATA_DIR="$OPENWEBUI_DATA_DIR"
-        export OPENAI_API_BASE_URL="http://127.0.0.1:$INTERNAL_LLAMA_PORT/v1"
-        export OPENAI_API_KEY="sk-no-key-required"
+        # Point OpenWebUI to Letta (which proxies to Llama Server)
+        export OPENAI_API_BASE_URL="http://127.0.0.1:$INTERNAL_LETTA_PORT/v1"
+        export OPENAI_API_KEY="sk-mock-key"
         # Prevent auto-opening browser
         export WEBUI_AUTH="True"
 
