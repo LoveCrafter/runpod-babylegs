@@ -43,19 +43,13 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
       huggingface-cli download huihui-ai/Huihui-gpt-oss-120b-BF16-abliterated --local-dir models --local-dir-use-symlinks False
       ```
 
-3.  **Create Python Virtual Environment:**
+3.  **Bootstrap the Environment:**
+    - Run the **Idempotent Overlord** script. This handles system dependencies, creates the virtual environment, resolves Python conflicts, and automatically hands off to `start_remote_services.sh`.
     ```bash
-    # From the repo root
-    python3 -m venv vesper_env
-    source vesper_env/bin/activate
+    ./bootstrap_vesper.sh
     ```
 
-4.  **Install Python Dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-5.  **Install & Compile `llama-server`:**
+4.  **Install & Compile `llama-server` (Handled by Bootstrap):**
     - The `start_remote_services.sh` script automatically clones `llama.cpp` (if missing) and compiles the server. It also detects multi-GPU setups and applies optimization flags (`--split-mode row`) automatically.
 
 ### 2.3. Service Configuration & Architecture
@@ -118,7 +112,25 @@ When proposing a code change, await the "Architect's Review." If the user asks y
 
 ---
 
-## 5. Common Pitfalls & Troubleshooting
+## 5. The Vesper Architecture Protocol
+
+This section captures the lessons learned from major dependency failures and defines the "Hardened Setup" approach.
+
+### 5.1. THE TWO-STAGE LAUNCH
+- **Concept:** `bootstrap_vesper.sh` is the "Idempotent Overlord" (Setup) and `start_remote_services.sh` is the "Runtime" (Execution).
+- **Rule:** Any new feature requiring a system package or Python library **MUST** be added to `bootstrap_vesper.sh`. Do not assume the environment persists or that dependencies are pre-installed.
+
+### 5.2. THE "ENGINE FIRST" DOCTRINE
+- **Context:** The C++ compilation logic for `llama-server` (located in `start_remote_services.sh`) is calibrated for a specific hardware profile (5-GPU H100 cluster).
+- **WARNING:** Do not refactor, "clean up," or touch the C++ compilation logic unless explicitly directed. It is "Sacred Ground."
+
+### 5.3. THE UNPINNING POLICY
+- **Context:** We deliberately strip version numbers for Python dependencies in the bootstrap script to resolve conflicts with OpenWebUI.
+- **Rule:** Do not "fix" this by re-pinning strict versions in `requirements.txt` unless you have verified they do not conflict with the latest OpenWebUI.
+
+---
+
+## 6. Common Pitfalls & Troubleshooting
 
 - **`git` Merge Conflicts:** If you encounter 'unrelated histories' errors, it's a sign you have forgotten to run the **Syncing Protocol** (Section 4.2).
 - **`llama-server` Build Failure:** If `make` fails inside the `llama.cpp` directory, ensure the `build-essential` and `cmake` packages are present. While they are included in the base template, a custom template might lack them.
@@ -126,7 +138,7 @@ When proposing a code change, await the "Architect's Review." If the user asks y
 
 ---
 
-## 6. Future Goals & Roadmap
+## 7. Future Goals & Roadmap
 
 - **Upgrade the Chat Interface:** The default `llama-server` web UI is very basic. Investigate and implement a robust, open-source frontend (e.g., Chainlit, Gradio, Streamlit) to provide a better user experience.
 - **Implement a Process Manager:** The `start_remote_services.sh` script uses `nohup` for background tasks. A more resilient solution would be to use a dedicated process manager like `pm2` or `supervisor` to handle auto-restarts, monitoring, and logging.
