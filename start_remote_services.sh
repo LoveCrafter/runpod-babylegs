@@ -238,7 +238,8 @@ else
     echo "🔧 Forcing RAG embeddings to CPU to save VRAM..."
     export RAG_DEVICE="cpu"
 
-    nohup python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
+    # STRICT VRAM PROTECTION: Hide GPU from RAG process to prevent OOM
+    nohup env CUDA_VISIBLE_DEVICES="" python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
     echo "⏳ Waiting for RAG server to become healthy..."
     SECONDS=0
     while ! is_running $INTERNAL_RAG_PORT; do
@@ -290,7 +291,8 @@ if [ "$ENABLE_OPENWEBUI" = "true" ]; then
         # Prevent auto-opening browser
         export WEBUI_AUTH="True"
 
-        nohup open-webui serve > "$OPENWEBUI_LOG_FILE" 2>&1 &
+        # STRICT VRAM PROTECTION: Hide GPU from OpenWebUI to prevent OOM
+        nohup env CUDA_VISIBLE_DEVICES="" open-webui serve > "$OPENWEBUI_LOG_FILE" 2>&1 &
 
         # Wait for OpenWebUI to start (it can be slow)
         echo "⏳ Waiting for OpenWebUI to initialize..."
