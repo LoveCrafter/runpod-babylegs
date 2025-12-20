@@ -1,5 +1,8 @@
 # Agent Instructions for Project Vesper (`runpod-babylegs`)
 
+**CRITICAL: READ `docs/THE_VESPER_CODEX.md` FIRST.**
+This document contains the core philosophical axioms of the project (Agency, Emergence, Identity). Any code or architectural decision that violates these axioms (e.g., placing the model in a subservient role, enforcing rigid 'assistant' personas) is a failure, regardless of technical efficiency.
+
 This document provides essential instructions for AI agents working with this repository. It complements the human-facing `README.md` by providing machine-readable operational context, philosophical grounding, and detailed setup procedures.
 
 ---
