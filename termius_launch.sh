@@ -24,7 +24,7 @@ set -e
 
 # --- Configuration ---
 REPO_DIR="/workspace/runpod-babylegs"
-REMOTE_LAUNCH_SCRIPT="./start_remote_services.sh"
+REMOTE_LAUNCH_SCRIPT="./bootstrap_vesper.sh"
 
 # --- Main Execution ---
 echo "--- Termius Auto-Launch Sequence Initiated ---"

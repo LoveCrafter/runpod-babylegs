@@ -26,7 +26,7 @@ if (-not $PodIp -or -not $PodPort) {
 }
 
 # --- Remote Path Configuration ---
-$RemoteScriptPath = "/workspace/runpod-babylegs/start_remote_services.sh"
+$RemoteScriptPath = "/workspace/runpod-babylegs/bootstrap_vesper.sh"
 $LlamaPort = "8080" # Used for the final instructions
 
 # --- Main Execution Block ---

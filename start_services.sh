@@ -27,7 +27,7 @@ POD_IP=$1
 POD_PORT=$2
 
 # --- Remote Path Configuration ---
-REMOTE_SCRIPT_PATH="/workspace/runpod-babylegs/start_remote_services.sh"
+REMOTE_SCRIPT_PATH="/workspace/runpod-babylegs/bootstrap_vesper.sh"
 LLAMA_PORT="8080" # Used for the final instructions
 
 # --- Main Execution via SSH ---
