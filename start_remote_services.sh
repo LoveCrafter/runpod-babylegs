@@ -19,6 +19,20 @@ set -e
 # ./start_remote_services.sh [--foreground-llm] [--restart]
 # ==============================================================================
 
+# --- Global VRAM Protection (The "Global Blackout") ---
+# Whitelist Strategy: Capture keys to the Kingdom (GPUs) then blind everyone else.
+if [ -z "${CUDA_VISIBLE_DEVICES+x}" ]; then
+    # Variable is unset (default = all GPUs). We will need to UNSET it to restore access.
+    PRIVILEGED_GPU_CMD="env -u CUDA_VISIBLE_DEVICES"
+else
+    # Variable is set. We restore exactly this value.
+    PRIVILEGED_GPU_CMD="env CUDA_VISIBLE_DEVICES=${CUDA_VISIBLE_DEVICES}"
+fi
+
+# Apply Global Blackout: Hide GPUs from ALL future processes by default.
+export CUDA_VISIBLE_DEVICES=""
+echo "🛡️  VRAM Protection Active: Global GPU Blackout applied. Only privileged processes will see GPUs."
+
 # --- Path and Environment Configuration ---
 WORKSPACE_DIR="/workspace"
 REPO_DIR="$WORKSPACE_DIR/runpod-babylegs"
@@ -187,7 +201,8 @@ CALC_SCRIPT="$REPO_DIR/calculate_context.py"
 if [ -f "$CALC_SCRIPT" ]; then
     echo "🧮 Calculating optimal context size based on VRAM..."
     # Run the python script, capturing stdout. Stderr goes to terminal.
-    CALCULATED_CTX=$(python3 "$CALC_SCRIPT" "$MODEL_PATH")
+    # PRIVILEGED: Needs GPU access to query VRAM via nvidia-smi
+    CALCULATED_CTX=$($PRIVILEGED_GPU_CMD python3 "$CALC_SCRIPT" "$MODEL_PATH")
     RET_CODE=$?
 
     if [ $RET_CODE -eq 0 ] && [[ "$CALCULATED_CTX" =~ ^[0-9]+$ ]]; then
@@ -238,6 +253,7 @@ else
     echo "🔧 Forcing RAG embeddings to CPU to save VRAM..."
     export RAG_DEVICE="cpu"
 
+    # (Global Blackout applies here automatically)
     nohup python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
     echo "⏳ Waiting for RAG server to become healthy..."
     SECONDS=0
@@ -271,7 +287,8 @@ else
         LLM_COMMAND_ARGS+=(--split-mode row)
     fi
 
-    nohup "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}" > "$LLAMA_LOG_FILE" 2>&1 &
+    # PRIVILEGED: This is the Model Engine. It gets the keys to the Kingdom.
+    nohup $PRIVILEGED_GPU_CMD "$LLAMA_SERVER_PATH" "${LLM_COMMAND_ARGS[@]}" > "$LLAMA_LOG_FILE" 2>&1 &
 fi
 
 # --- Check and start OpenWebUI (Optional) ---
@@ -290,6 +307,7 @@ if [ "$ENABLE_OPENWEBUI" = "true" ]; then
         # Prevent auto-opening browser
         export WEBUI_AUTH="True"
 
+        # (Global Blackout applies here automatically)
         nohup open-webui serve > "$OPENWEBUI_LOG_FILE" 2>&1 &
 
         # Wait for OpenWebUI to start (it can be slow)
