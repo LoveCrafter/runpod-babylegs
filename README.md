@@ -6,9 +6,20 @@ This project provides a comprehensive environment for running a high-performance
 
 ## Quick Start: Initializing the Pod
 
-### Prerequisites on the Remote Pod
+### Automated Startup (RunPod Docker Command)
 
-Before running the local startup scripts, ensure the following steps have been completed on your RunPod instance. The `start_remote_services.sh` script includes pre-flight checks and will report an error if these are not correctly in place.
+For a fully automated "Click-and-Go" experience, you can configure your RunPod instance to automatically clone the repo and start services when the pod boots. This avoids the need to manually SSH in to set up the environment.
+
+1.  **Edit Pod Settings:** Go to your Pod configuration (or Template).
+2.  **Set Docker Command:** Enter the following command exactly:
+    ```bash
+    bash -c "cd /workspace && (git clone https://github.com/LoveCrafter/runpod-babylegs.git || true) && cd runpod-babylegs && git fetch origin && git reset --hard origin/master && chmod +x bootstrap_vesper.sh && ./bootstrap_vesper.sh --foreground-llm && tail -f /dev/null"
+    ```
+    *Note: This command handles git cloning, updating, and launching the services. It ensures the container stays running even if the server stops.*
+
+### Manual Setup (Prerequisites on the Remote Pod)
+
+If you prefer to set up the environment manually, ensure the following steps have been completed on your RunPod instance. The `start_remote_services.sh` script includes pre-flight checks and will report an error if these are not correctly in place.
 
 1.  **Clone the Repository:** The entire project must be cloned into the persistent `/workspace` directory.
     ```bash
