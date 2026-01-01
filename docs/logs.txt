@@ -1,0 +1,220 @@
+2026-01-01T20:01:46.034550791Z ==========
+2026-01-01T20:01:46.034559451Z == CUDA ==
+2026-01-01T20:01:46.034783364Z ==========
+2026-01-01T20:01:46.045146830Z CUDA Version 12.4.1
+2026-01-01T20:01:46.045159207Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:01:46.047583152Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:01:46.047589374Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:01:46.047594554Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:01:46.047604553Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:01:46.071726657Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:02:03.239897792Z ==========
+2026-01-01T20:02:03.239928712Z == CUDA ==
+2026-01-01T20:02:03.240099657Z ==========
+2026-01-01T20:02:03.246067815Z CUDA Version 12.4.1
+2026-01-01T20:02:03.248234660Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:02:03.250511560Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:02:03.250517062Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:02:03.250522152Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:02:03.250532202Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:02:03.270188361Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:02:20.554373288Z ==========
+2026-01-01T20:02:20.554439177Z == CUDA ==
+2026-01-01T20:02:20.554620145Z ==========
+2026-01-01T20:02:20.560712512Z CUDA Version 12.4.1
+2026-01-01T20:02:20.562933437Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:02:20.565184067Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:02:20.565189688Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:02:20.565194960Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:02:20.565205747Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:02:20.585221957Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:02:37.891291013Z ==========
+2026-01-01T20:02:37.891315287Z == CUDA ==
+2026-01-01T20:02:37.891487800Z ==========
+2026-01-01T20:02:37.897477137Z CUDA Version 12.4.1
+2026-01-01T20:02:37.899814784Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:02:37.902080088Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:02:37.902085561Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:02:37.902090413Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:02:37.902105681Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:02:37.921746165Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:02:55.179478150Z ==========
+2026-01-01T20:02:55.179529465Z == CUDA ==
+2026-01-01T20:02:55.179792749Z ==========
+2026-01-01T20:02:55.186014535Z CUDA Version 12.4.1
+2026-01-01T20:02:55.188204799Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:02:55.190416024Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:02:55.190421234Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:02:55.190426038Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:02:55.190435701Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:02:55.210616490Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:03:12.642303021Z ==========
+2026-01-01T20:03:12.642365498Z == CUDA ==
+2026-01-01T20:03:12.642517139Z ==========
+2026-01-01T20:03:12.648832304Z CUDA Version 12.4.1
+2026-01-01T20:03:12.651049045Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:03:12.653325132Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:03:12.653331381Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:03:12.653336475Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:03:12.653346907Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:03:12.673298587Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:03:29.985425751Z ==========
+2026-01-01T20:03:29.985475390Z == CUDA ==
+2026-01-01T20:03:29.985700514Z ==========
+2026-01-01T20:03:29.991522976Z CUDA Version 12.4.1
+2026-01-01T20:03:29.993668226Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:03:29.995714182Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:03:29.995719714Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:03:29.995725014Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:03:29.995734478Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:03:30.015323889Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:03:47.317850654Z ==========
+2026-01-01T20:03:47.317899849Z == CUDA ==
+2026-01-01T20:03:47.318114859Z ==========
+2026-01-01T20:03:47.324311426Z CUDA Version 12.4.1
+2026-01-01T20:03:47.326488646Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:03:47.328743578Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:03:47.328749410Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:03:47.328754747Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:03:47.328764562Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:03:47.348586248Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:04:04.619427229Z ==========
+2026-01-01T20:04:04.619491106Z == CUDA ==
+2026-01-01T20:04:04.619690720Z ==========
+2026-01-01T20:04:04.625483390Z CUDA Version 12.4.1
+2026-01-01T20:04:04.627676026Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:04:04.629875539Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:04:04.629881347Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:04:04.629886005Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:04:04.629895647Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:04:04.650190223Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:04:21.882982040Z ==========
+2026-01-01T20:04:21.883053500Z == CUDA ==
+2026-01-01T20:04:21.883231188Z ==========
+2026-01-01T20:04:21.888532848Z CUDA Version 12.4.1
+2026-01-01T20:04:21.890934485Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:04:21.893307974Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:04:21.893313862Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:04:21.893319711Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:04:21.893330129Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:04:21.913849177Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:04:39.202739603Z ==========
+2026-01-01T20:04:39.202774698Z == CUDA ==
+2026-01-01T20:04:39.202956758Z ==========
+2026-01-01T20:04:39.209453829Z CUDA Version 12.4.1
+2026-01-01T20:04:39.211929757Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:04:39.214285642Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:04:39.214291336Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:04:39.214296440Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:04:39.214305772Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:04:39.236168272Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:04:56.508392105Z ==========
+2026-01-01T20:04:56.508414069Z == CUDA ==
+2026-01-01T20:04:56.508605833Z ==========
+2026-01-01T20:04:56.515028325Z CUDA Version 12.4.1
+2026-01-01T20:04:56.517262264Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:04:56.519442180Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:04:56.519447804Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:04:56.519452884Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:04:56.519462379Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:04:56.539375983Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:05:14.082160707Z ==========
+2026-01-01T20:05:14.082181940Z == CUDA ==
+2026-01-01T20:05:14.082283203Z ==========
+2026-01-01T20:05:14.088567081Z CUDA Version 12.4.1
+2026-01-01T20:05:14.091151823Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:05:14.093753056Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:05:14.093759844Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:05:14.093765244Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:05:14.093775790Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:05:14.115475633Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:05:31.435469206Z ==========
+2026-01-01T20:05:31.435519293Z == CUDA ==
+2026-01-01T20:05:31.435739185Z ==========
+2026-01-01T20:05:31.442186958Z CUDA Version 12.4.1
+2026-01-01T20:05:31.444772270Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:05:31.447411737Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:05:31.447418496Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:05:31.447424142Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:05:31.447437272Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:05:31.470279834Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:05:48.725203387Z ==========
+2026-01-01T20:05:48.725281405Z == CUDA ==
+2026-01-01T20:05:48.725450595Z ==========
+2026-01-01T20:05:48.731329541Z CUDA Version 12.4.1
+2026-01-01T20:05:48.733545452Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:05:48.735774232Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:05:48.735779662Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:05:48.735784394Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:05:48.735794168Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:05:48.755242212Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:06:06.064081524Z ==========
+2026-01-01T20:06:06.064187729Z == CUDA ==
+2026-01-01T20:06:06.064317206Z ==========
+2026-01-01T20:06:06.070606074Z CUDA Version 12.4.1
+2026-01-01T20:06:06.072881067Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:06:06.075160044Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:06:06.075165790Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:06:06.075171087Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:06:06.075181968Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:06:06.095761684Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:06:23.423930967Z ==========
+2026-01-01T20:06:23.423960983Z == CUDA ==
+2026-01-01T20:06:23.424164074Z ==========
+2026-01-01T20:06:23.430323758Z CUDA Version 12.4.1
+2026-01-01T20:06:23.432509423Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:06:23.434830890Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:06:23.434836894Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:06:23.434842123Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:06:23.434851869Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:06:23.455516847Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:06:40.713315629Z ==========
+2026-01-01T20:06:40.713368023Z == CUDA ==
+2026-01-01T20:06:40.713573021Z ==========
+2026-01-01T20:06:40.719888738Z CUDA Version 12.4.1
+2026-01-01T20:06:40.722291688Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:06:40.724677329Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:06:40.724686094Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:06:40.724694336Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:06:40.724708421Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:06:40.745462140Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:06:58.010181995Z ==========
+2026-01-01T20:06:58.010225452Z == CUDA ==
+2026-01-01T20:06:58.010451119Z ==========
+2026-01-01T20:06:58.016864033Z CUDA Version 12.4.1
+2026-01-01T20:06:58.019219738Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:06:58.021708908Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:06:58.021716790Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:06:58.021722040Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:06:58.021733315Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:06:58.041812478Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:07:15.359639089Z ==========
+2026-01-01T20:07:15.359703703Z == CUDA ==
+2026-01-01T20:07:15.359913204Z ==========
+2026-01-01T20:07:15.366550513Z CUDA Version 12.4.1
+2026-01-01T20:07:15.368848611Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:07:15.371665804Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:07:15.371669725Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:07:15.371672577Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:07:15.371678116Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:07:15.393725330Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:07:32.592921571Z ==========
+2026-01-01T20:07:32.592965988Z == CUDA ==
+2026-01-01T20:07:32.592974802Z ==========
+2026-01-01T20:07:32.598342917Z CUDA Version 12.4.1
+2026-01-01T20:07:32.600538471Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:07:32.602829731Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:07:32.602836497Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:07:32.602841580Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:07:32.602851233Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:07:32.622410238Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found
+2026-01-01T20:07:49.918820967Z ==========
+2026-01-01T20:07:49.918850888Z == CUDA ==
+2026-01-01T20:07:49.919050055Z ==========
+2026-01-01T20:07:49.925401405Z CUDA Version 12.4.1
+2026-01-01T20:07:49.927706542Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:07:49.930093584Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:07:49.930099523Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:07:49.930104634Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:07:49.930114510Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:07:49.951571267Z /opt/nvidia/nvidia_entrypoint.sh: line 67: exec: cd: not found

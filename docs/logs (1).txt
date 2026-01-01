@@ -1,0 +1,194 @@
+2026-01-01T20:11:08.292531661Z ==========
+2026-01-01T20:11:08.292591871Z == CUDA ==
+2026-01-01T20:11:08.292825552Z ==========
+2026-01-01T20:11:08.301487053Z CUDA Version 12.4.1
+2026-01-01T20:11:08.301978095Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:11:08.304615962Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:11:08.304622166Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:11:08.304626998Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:11:08.304638307Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:11:11.148606218Z From https://github.com/LoveCrafter/runpod-babylegs
+2026-01-01T20:11:11.148660455Z    ab01e1e..cd9d929  master     -> origin/master
+2026-01-01T20:11:12.359915138Z HEAD is now at cd9d929 Merge pull request #32 from LoveCrafter/fix/bootstrap-script-6275748474671617235
+2026-01-01T20:11:12.378055986Z --- Vesper Bootstrap Sequence Initiated ---
+2026-01-01T20:11:12.378089500Z 🔍 Phase 1: System Audit...
+2026-01-01T20:11:12.378714235Z ⬇️  Tailscale not found. Installing...
+2026-01-01T20:11:13.074414610Z Installing Tailscale for ubuntu jammy, using method apt
+2026-01-01T20:11:13.074480937Z + mkdir -p --mode=0755 /usr/share/keyrings
+2026-01-01T20:11:13.077326862Z + curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg
+2026-01-01T20:11:13.077782519Z + tee /usr/share/keyrings/tailscale-archive-keyring.gpg
+2026-01-01T20:11:13.260388687Z + chmod 0644 /usr/share/keyrings/tailscale-archive-keyring.gpg
+2026-01-01T20:11:13.262665417Z + curl -fsSL https://pkgs.tailscale.com/stable/ubuntu/jammy.tailscale-keyring.list
+2026-01-01T20:11:13.262884110Z + tee /etc/apt/sources.list.d/tailscale.list
+2026-01-01T20:11:13.437160636Z # Tailscale packages for ubuntu jammy
+2026-01-01T20:11:13.437192385Z deb [signed-by=/usr/share/keyrings/tailscale-archive-keyring.gpg] https://pkgs.tailscale.com/stable/ubuntu jammy main
+2026-01-01T20:11:13.443272522Z + chmod 0644 /etc/apt/sources.list.d/tailscale.list
+2026-01-01T20:11:13.444910067Z + apt-get update
+2026-01-01T20:11:13.679388474Z Get:1 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  InRelease [1581 B]
+2026-01-01T20:11:13.719568074Z Get:2 https://pkgs.tailscale.com/stable/ubuntu jammy InRelease
+2026-01-01T20:11:13.800319520Z Get:3 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+2026-01-01T20:11:13.815940762Z Get:4 http://archive.ubuntu.com/ubuntu jammy InRelease [270 kB]
+2026-01-01T20:11:13.904064607Z Get:5 https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64  Packages [2225 kB]
+2026-01-01T20:11:14.019331530Z Get:6 https://pkgs.tailscale.com/stable/ubuntu jammy/main amd64 Packages [14.3 kB]
+2026-01-01T20:11:14.082777777Z Get:7 https://pkgs.tailscale.com/stable/ubuntu jammy/main all Packages [354 B]
+2026-01-01T20:11:14.166423222Z Get:8 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy InRelease [18.1 kB]
+2026-01-01T20:11:14.547018650Z Get:9 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+2026-01-01T20:11:14.566920273Z Get:10 https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu jammy/main amd64 Packages [38.5 kB]
+2026-01-01T20:11:14.721316457Z Get:11 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+2026-01-01T20:11:14.788795456Z Get:12 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1287 kB]
+2026-01-01T20:11:15.039975213Z Get:13 http://archive.ubuntu.com/ubuntu jammy/universe amd64 Packages [17.5 MB]
+2026-01-01T20:11:15.347146910Z Get:14 http://security.ubuntu.com/ubuntu jammy-security/multiverse amd64 Packages [60.9 kB]
+2026-01-01T20:11:15.349635329Z Get:15 http://security.ubuntu.com/ubuntu jammy-security/restricted amd64 Packages [6205 kB]
+2026-01-01T20:11:15.667852564Z Get:16 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [3633 kB]
+2026-01-01T20:11:16.159690277Z Get:17 http://archive.ubuntu.com/ubuntu jammy/restricted amd64 Packages [164 kB]
+2026-01-01T20:11:16.162821382Z Get:18 http://archive.ubuntu.com/ubuntu jammy/main amd64 Packages [1792 kB]
+2026-01-01T20:11:16.186771959Z Get:19 http://archive.ubuntu.com/ubuntu jammy/multiverse amd64 Packages [266 kB]
+2026-01-01T20:11:16.189200097Z Get:20 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1598 kB]
+2026-01-01T20:11:16.200868633Z Get:21 http://archive.ubuntu.com/ubuntu jammy-updates/multiverse amd64 Packages [69.2 kB]
+2026-01-01T20:11:16.201943835Z Get:22 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3966 kB]
+2026-01-01T20:11:16.336481995Z Get:23 http://archive.ubuntu.com/ubuntu jammy-updates/restricted amd64 Packages [6411 kB]
+2026-01-01T20:11:16.603118946Z Get:24 http://archive.ubuntu.com/ubuntu jammy-backports/universe amd64 Packages [37.2 kB]
+2026-01-01T20:11:16.603829796Z Get:25 http://archive.ubuntu.com/ubuntu jammy-backports/main amd64 Packages [83.9 kB]
+2026-01-01T20:11:17.841361614Z Fetched 46.0 MB in 4s (10.7 MB/s)
+2026-01-01T20:11:19.197545629Z Reading package lists...
+2026-01-01T20:11:19.219575574Z + [ -n  ]
+2026-01-01T20:11:19.219615744Z + apt-get install -y tailscale tailscale-archive-keyring
+2026-01-01T20:11:20.587817974Z Reading package lists...
+2026-01-01T20:11:20.838056201Z Building dependency tree...
+2026-01-01T20:11:20.838106546Z Reading state information...
+2026-01-01T20:11:21.034820971Z The following additional packages will be installed:
+2026-01-01T20:11:21.035496368Z   iptables libip6tc2 libnetfilter-conntrack3 libnfnetlink0 libnftnl11 netbase
+2026-01-01T20:11:21.036170689Z Suggested packages:
+2026-01-01T20:11:21.036181729Z   firewalld kmod nftables
+2026-01-01T20:11:21.093944055Z The following NEW packages will be installed:
+2026-01-01T20:11:21.094709507Z   iptables libip6tc2 libnetfilter-conntrack3 libnfnetlink0 libnftnl11 netbase
+2026-01-01T20:11:21.094759178Z   tailscale tailscale-archive-keyring
+2026-01-01T20:11:21.337733126Z 0 upgraded, 8 newly installed, 0 to remove and 136 not upgraded.
+2026-01-01T20:11:21.337768895Z Need to get 34.2 MB of archives.
+2026-01-01T20:11:21.337774614Z After this operation, 68.9 MB of additional disk space will be used.
+2026-01-01T20:11:21.337779796Z Get:2 https://pkgs.tailscale.com/stable/ubuntu jammy/main all tailscale-archive-keyring all 1.35.181 [3082 B]
+2026-01-01T20:11:21.405269856Z Get:3 http://archive.ubuntu.com/ubuntu jammy/main amd64 netbase all 6.3 [12.9 kB]
+2026-01-01T20:11:21.519166454Z Get:1 https://pkgs.tailscale.com/stable/ubuntu jammy/main amd64 tailscale amd64 1.92.3 [33.6 MB]
+2026-01-01T20:11:21.536288581Z Get:4 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 libip6tc2 amd64 1.8.7-1ubuntu5.2 [20.3 kB]
+2026-01-01T20:11:21.595277089Z Get:5 http://archive.ubuntu.com/ubuntu jammy/main amd64 libnfnetlink0 amd64 1.0.1-3build3 [14.6 kB]
+2026-01-01T20:11:21.679059740Z Get:6 http://archive.ubuntu.com/ubuntu jammy/main amd64 libnetfilter-conntrack3 amd64 1.0.9-1 [45.3 kB]
+2026-01-01T20:11:21.813756616Z Get:7 http://archive.ubuntu.com/ubuntu jammy/main amd64 libnftnl11 amd64 1.2.1-1build1 [65.5 kB]
+2026-01-01T20:11:21.912732295Z Get:8 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 iptables amd64 1.8.7-1ubuntu5.2 [455 kB]
+2026-01-01T20:11:22.364280213Z debconf: delaying package configuration, since apt-utils is not installed
+2026-01-01T20:11:22.412740348Z Fetched 34.2 MB in 1s (32.0 MB/s)
+2026-01-01T20:11:22.445078936Z Selecting previously unselected package netbase.
+2026-01-01T20:11:22.454847552Z (Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 24135 files and directories currently installed.)
+2026-01-01T20:11:22.455328239Z Preparing to unpack .../0-netbase_6.3_all.deb ...
+2026-01-01T20:11:22.455928174Z Unpacking netbase (6.3) ...
+2026-01-01T20:11:22.485235429Z Selecting previously unselected package libip6tc2:amd64.
+2026-01-01T20:11:22.486500966Z Preparing to unpack .../1-libip6tc2_1.8.7-1ubuntu5.2_amd64.deb ...
+2026-01-01T20:11:22.487821030Z Unpacking libip6tc2:amd64 (1.8.7-1ubuntu5.2) ...
+2026-01-01T20:11:22.515722575Z Selecting previously unselected package libnfnetlink0:amd64.
+2026-01-01T20:11:22.516909175Z Preparing to unpack .../2-libnfnetlink0_1.0.1-3build3_amd64.deb ...
+2026-01-01T20:11:22.517746624Z Unpacking libnfnetlink0:amd64 (1.0.1-3build3) ...
+2026-01-01T20:11:22.541694284Z Selecting previously unselected package libnetfilter-conntrack3:amd64.
+2026-01-01T20:11:22.542793388Z Preparing to unpack .../3-libnetfilter-conntrack3_1.0.9-1_amd64.deb ...
+2026-01-01T20:11:22.543419450Z Unpacking libnetfilter-conntrack3:amd64 (1.0.9-1) ...
+2026-01-01T20:11:22.572556862Z Selecting previously unselected package libnftnl11:amd64.
+2026-01-01T20:11:22.573698667Z Preparing to unpack .../4-libnftnl11_1.2.1-1build1_amd64.deb ...
+2026-01-01T20:11:22.574178798Z Unpacking libnftnl11:amd64 (1.2.1-1build1) ...
+2026-01-01T20:11:22.603772174Z Selecting previously unselected package iptables.
+2026-01-01T20:11:22.605017660Z Preparing to unpack .../5-iptables_1.8.7-1ubuntu5.2_amd64.deb ...
+2026-01-01T20:11:22.605476650Z Unpacking iptables (1.8.7-1ubuntu5.2) ...
+2026-01-01T20:11:22.673785109Z Selecting previously unselected package tailscale.
+2026-01-01T20:11:22.675356397Z Preparing to unpack .../6-tailscale_1.92.3_amd64.deb ...
+2026-01-01T20:11:22.675816665Z Unpacking tailscale (1.92.3) ...
+2026-01-01T20:11:23.143160705Z Selecting previously unselected package tailscale-archive-keyring.
+2026-01-01T20:11:23.145487795Z Preparing to unpack .../7-tailscale-archive-keyring_1.35.181_all.deb ...
+2026-01-01T20:11:23.146013165Z Unpacking tailscale-archive-keyring (1.35.181) ...
+2026-01-01T20:11:23.188982937Z Setting up tailscale-archive-keyring (1.35.181) ...
+2026-01-01T20:11:23.191478635Z Setting up libip6tc2:amd64 (1.8.7-1ubuntu5.2) ...
+2026-01-01T20:11:23.192546146Z Setting up libnftnl11:amd64 (1.2.1-1build1) ...
+2026-01-01T20:11:23.193380789Z Setting up libnfnetlink0:amd64 (1.0.1-3build3) ...
+2026-01-01T20:11:23.194512048Z Setting up netbase (6.3) ...
+2026-01-01T20:11:23.233293882Z Setting up libnetfilter-conntrack3:amd64 (1.0.9-1) ...
+2026-01-01T20:11:23.234517605Z Setting up iptables (1.8.7-1ubuntu5.2) ...
+2026-01-01T20:11:23.286292615Z update-alternatives: using /usr/sbin/iptables-legacy to provide /usr/sbin/iptables (iptables) in auto mode
+2026-01-01T20:11:23.290475837Z update-alternatives: using /usr/sbin/ip6tables-legacy to provide /usr/sbin/ip6tables (ip6tables) in auto mode
+2026-01-01T20:11:23.295239344Z update-alternatives: using /usr/sbin/iptables-nft to provide /usr/sbin/iptables (iptables) in auto mode
+2026-01-01T20:11:23.299714374Z update-alternatives: using /usr/sbin/ip6tables-nft to provide /usr/sbin/ip6tables (ip6tables) in auto mode
+2026-01-01T20:11:23.303995852Z update-alternatives: using /usr/sbin/arptables-nft to provide /usr/sbin/arptables (arptables) in auto mode
+2026-01-01T20:11:23.308893979Z update-alternatives: using /usr/sbin/ebtables-nft to provide /usr/sbin/ebtables (ebtables) in auto mode
+2026-01-01T20:11:23.312118687Z Setting up tailscale (1.92.3) ...
+2026-01-01T20:11:23.509717236Z Created symlink /etc/systemd/system/multi-user.target.wants/tailscaled.service → /lib/systemd/system/tailscaled.service.
+2026-01-01T20:11:23.514577243Z Processing triggers for libc-bin (2.35-0ubuntu3.8) ...
+2026-01-01T20:11:23.605111245Z Installation complete! Log in to start using Tailscale by running:
+2026-01-01T20:11:23.605155656Z tailscale up
+2026-01-01T20:11:23.605180062Z + [ false = true ]
+2026-01-01T20:11:23.605186202Z + set +x
+2026-01-01T20:11:23.648592066Z ✅ Nginx is installed.
+2026-01-01T20:11:23.648626687Z 🐍 Phase 2: Python Dependency Resolution...
+2026-01-01T20:11:23.656205945Z 🔌 Activating virtual environment...
+2026-01-01T20:11:23.660963990Z ⬆️  Upgrading pip...
+2026-01-01T20:11:23.848867283Z Traceback (most recent call last):
+2026-01-01T20:11:23.848922663Z   File "/workspace/runpod-babylegs/vesper_env/bin/pip", line 5, in <module>
+2026-01-01T20:11:23.853741630Z     from pip._internal.cli.main import main
+2026-01-01T20:11:23.853778500Z ModuleNotFoundError: No module named 'pip'
+2026-01-01T20:11:25.811199290Z ==========
+2026-01-01T20:11:25.811246217Z == CUDA ==
+2026-01-01T20:11:25.811583275Z ==========
+2026-01-01T20:11:25.818232337Z CUDA Version 12.4.1
+2026-01-01T20:11:25.820767351Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:11:25.823172561Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:11:25.823178551Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:11:25.823183531Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:11:25.823192715Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:11:27.591479371Z HEAD is now at cd9d929 Merge pull request #32 from LoveCrafter/fix/bootstrap-script-6275748474671617235
+2026-01-01T20:11:27.648435627Z --- Vesper Bootstrap Sequence Initiated ---
+2026-01-01T20:11:27.648479411Z 🔍 Phase 1: System Audit...
+2026-01-01T20:11:27.649020723Z ✅ Tailscale is installed.
+2026-01-01T20:11:27.650062977Z ✅ Nginx is installed.
+2026-01-01T20:11:27.650104913Z 🐍 Phase 2: Python Dependency Resolution...
+2026-01-01T20:11:27.655576491Z 🔌 Activating virtual environment...
+2026-01-01T20:11:27.659275070Z ⬆️  Upgrading pip...
+2026-01-01T20:11:27.872707843Z Traceback (most recent call last):
+2026-01-01T20:11:27.872780051Z   File "/workspace/runpod-babylegs/vesper_env/bin/pip", line 5, in <module>
+2026-01-01T20:11:27.885302783Z     from pip._internal.cli.main import main
+2026-01-01T20:11:27.885441621Z ModuleNotFoundError: No module named 'pip'
+2026-01-01T20:11:43.188453367Z ==========
+2026-01-01T20:11:43.188493164Z == CUDA ==
+2026-01-01T20:11:43.188715288Z ==========
+2026-01-01T20:11:43.194713370Z CUDA Version 12.4.1
+2026-01-01T20:11:43.196854057Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:11:43.199133310Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:11:43.199139169Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:11:43.199144293Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:11:43.199154170Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:11:45.544722903Z HEAD is now at cd9d929 Merge pull request #32 from LoveCrafter/fix/bootstrap-script-6275748474671617235
+2026-01-01T20:11:45.568939838Z --- Vesper Bootstrap Sequence Initiated ---
+2026-01-01T20:11:45.568953302Z 🔍 Phase 1: System Audit...
+2026-01-01T20:11:45.569861278Z ✅ Tailscale is installed.
+2026-01-01T20:11:45.570692645Z ✅ Nginx is installed.
+2026-01-01T20:11:45.570702075Z 🐍 Phase 2: Python Dependency Resolution...
+2026-01-01T20:11:45.578151469Z 🔌 Activating virtual environment...
+2026-01-01T20:11:45.579920655Z ⬆️  Upgrading pip...
+2026-01-01T20:11:45.848982577Z Traceback (most recent call last):
+2026-01-01T20:11:45.849004894Z   File "/workspace/runpod-babylegs/vesper_env/bin/pip", line 5, in <module>
+2026-01-01T20:11:45.854017013Z     from pip._internal.cli.main import main
+2026-01-01T20:11:45.854100245Z ModuleNotFoundError: No module named 'pip'
+2026-01-01T20:12:00.505707495Z ==========
+2026-01-01T20:12:00.505811222Z == CUDA ==
+2026-01-01T20:12:00.505938299Z ==========
+2026-01-01T20:12:00.512288005Z CUDA Version 12.4.1
+2026-01-01T20:12:00.514457454Z Container image Copyright (c) 2016-2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+2026-01-01T20:12:00.516810848Z This container image and its contents are governed by the NVIDIA Deep Learning Container License.
+2026-01-01T20:12:00.516816860Z By pulling and using the container, you accept the terms and conditions of this license:
+2026-01-01T20:12:00.516822157Z https://developer.nvidia.com/ngc/nvidia-deep-learning-container-license
+2026-01-01T20:12:00.516832152Z A copy of this license is made available in this container at /NGC-DL-CONTAINER-LICENSE for your convenience.
+2026-01-01T20:12:02.744827252Z HEAD is now at cd9d929 Merge pull request #32 from LoveCrafter/fix/bootstrap-script-6275748474671617235
+2026-01-01T20:12:02.766273458Z --- Vesper Bootstrap Sequence Initiated ---
+2026-01-01T20:12:02.766312927Z 🔍 Phase 1: System Audit...
+2026-01-01T20:12:02.768252914Z ✅ Tailscale is installed.
+2026-01-01T20:12:02.769054850Z ✅ Nginx is installed.
+2026-01-01T20:12:02.769064902Z 🐍 Phase 2: Python Dependency Resolution...
+2026-01-01T20:12:02.774503765Z 🔌 Activating virtual environment...
+2026-01-01T20:12:02.776737542Z ⬆️  Upgrading pip...
+2026-01-01T20:12:02.976881842Z Traceback (most recent call last):
+2026-01-01T20:12:02.976919052Z   File "/workspace/runpod-babylegs/vesper_env/bin/pip", line 5, in <module>
+2026-01-01T20:12:02.983607243Z     from pip._internal.cli.main import main
+2026-01-01T20:12:02.983694279Z ModuleNotFoundError: No module named 'pip'

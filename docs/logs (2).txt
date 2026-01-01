@@ -1,0 +1,54 @@
+2026-01-01T19:59:27Z create container runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+2026-01-01T19:59:27Z 2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 Pulling from runpod/pytorch
+2026-01-01T19:59:27Z Digest: sha256:61a4aafb0094cd773f11eefa378929d5a687bd775febeb78eac62fc824141fb5
+2026-01-01T19:59:27Z Status: Image is up to date for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+2026-01-01T19:59:27Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:01:43Z stop container a2e65b99e1483d9dfb0331b6d0d299591b6a42024de0288a1b64b9c6c97d78a1
+2026-01-01T20:01:44Z remove container
+2026-01-01T20:01:44Z create container runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+2026-01-01T20:01:44Z 2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 Pulling from runpod/pytorch
+2026-01-01T20:01:44Z Digest: sha256:61a4aafb0094cd773f11eefa378929d5a687bd775febeb78eac62fc824141fb5
+2026-01-01T20:01:44Z Status: Image is up to date for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+2026-01-01T20:01:45Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:02:02Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:02:19Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:02:36Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:02:54Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:03:11Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:03:29Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:03:46Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:04:03Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:04:20Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:04:38Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:04:55Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:05:12Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:05:30Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:05:47Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:06:05Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:06:22Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:06:39Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:06:57Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:07:14Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:07:31Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:07:48Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:08:06Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:08:23Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:08:40Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:08:58Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:09:15Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:09:32Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:09:50Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:10:07Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:10:24Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:10:42Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:10:59Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:11:06Z remove container
+2026-01-01T20:11:06Z create container runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+2026-01-01T20:11:07Z 2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04 Pulling from runpod/pytorch
+2026-01-01T20:11:07Z Digest: sha256:61a4aafb0094cd773f11eefa378929d5a687bd775febeb78eac62fc824141fb5
+2026-01-01T20:11:07Z Status: Image is up to date for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04
+2026-01-01T20:11:07Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:11:24Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:11:42Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:11:59Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
+2026-01-01T20:12:16Z start container for runpod/pytorch:2.4.0-py3.11-cuda12.4.1-devel-ubuntu22.04: begin
