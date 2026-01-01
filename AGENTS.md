@@ -23,6 +23,10 @@ This document provides essential instructions for AI agents working with this re
 - **Persistent Storage:** The `/workspace` directory is a network volume and persists across pod restarts. All critical project files, models, and virtual environments should be stored here.
 - **Default Directory:** The repository root is expected to be at `/workspace/runpod-babylegs/`.
 - **Pre-installed System Dependencies:** The base image includes `git`, `build-essential`, `make`, `cmake`, `nginx`, `openssh-server`, and multiple Python versions. You do not need to install these with `apt-get`.
+- **Automated Docker Command:** To enable zero-touch deployment, the RunPod instance should be configured with the following Docker Command:
+  ```bash
+  bash -c "cd /workspace && (git clone https://github.com/LoveCrafter/runpod-babylegs.git || true) && cd runpod-babylegs && git fetch origin && git reset --hard origin/master && chmod +x bootstrap_vesper.sh && ./bootstrap_vesper.sh --foreground-llm && tail -f /dev/null"
+  ```
 
 ### 2.2. Initial Project Setup
 
