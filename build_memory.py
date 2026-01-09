@@ -64,19 +64,100 @@ def unzip_export(zip_path: str, out_dir: str):
 def build_message_stream(conv_dir: str):
     print("[+] Parsing conversation files...")
     msgs = []
-    conv_path = pathlib.Path(conv_dir) / "conversations"
-    for p in tqdm(list(conv_path.rglob("*.json"))):
-        with p.open("rb") as f:
-            data = orjson.loads(f.read())
-            for msg_id, msg_details in data.get("mapping", {}).items():
+
+    # Strategy 1: Look for single 'conversations.json' (Standard Export)
+    # We check conv_dir/conversations.json
+    single_file = pathlib.Path(conv_dir) / "conversations.json"
+
+    # If not found there, check if it's inside a subdirectory (common if zip contained a folder)
+    if not single_file.exists():
+         # Simple check one level deep
+         subdirs = [x for x in pathlib.Path(conv_dir).iterdir() if x.is_dir()]
+         for sub in subdirs:
+             candidate = sub / "conversations.json"
+             if candidate.exists():
+                 single_file = candidate
+                 break
+
+    if single_file.exists():
+        print(f"[+] Found conversations file at {single_file}")
+        with single_file.open("rb") as f:
+            try:
+                data = orjson.loads(f.read())
+            except orjson.JSONDecodeError:
+                print(f"[!] Failed to decode JSON from {single_file}")
+                return []
+
+        # Ensure we have a list of conversations
+        conversations = []
+        if isinstance(data, list):
+            conversations = data
+        elif isinstance(data, dict) and "mapping" in data:
+            # Single conversation dict
+            conversations = [data]
+
+        for conv in tqdm(conversations, desc="Processing conversations"):
+            mapping = conv.get("mapping", {})
+            for msg_id, msg_details in mapping.items():
                 if msg_details.get("message"):
                     msg = msg_details["message"]
                     role = msg.get("author", {}).get("role", "user")
-                    ts = float(msg.get("create_time", 0.0))
+
+                    # Robust timestamp handling
+                    create_time = msg.get("create_time")
+                    try:
+                        ts = float(create_time) if create_time is not None else 0.0
+                    except (ValueError, TypeError):
+                        ts = 0.0
+
                     parts = msg.get("content", {}).get("parts", [])
-                    content = "\n".join(p for p in parts if isinstance(p, str)).strip()
+                    # Robust content handling
+                    content_list = []
+                    for p in parts:
+                        if isinstance(p, str):
+                            content_list.append(p)
+                        elif p is not None:
+                            content_list.append(str(p))
+
+                    content = "\n".join(content_list).strip()
+
                     if content:
                         msgs.append({"role": role, "timestamp": ts, "content": content})
+
+    else:
+        # Strategy 2: Look for 'conversations' directory with multiple JSONs (Legacy/Custom)
+        conv_path = pathlib.Path(conv_dir) / "conversations"
+        if conv_path.is_dir():
+            print(f"[+] Scanning directory: {conv_path}")
+            for p in tqdm(list(conv_path.rglob("*.json"))):
+                with p.open("rb") as f:
+                    try:
+                        data = orjson.loads(f.read())
+                    except:
+                        continue
+
+                    # Assuming each file is a conversation dict
+                    mapping = data.get("mapping", {})
+                    for msg_id, msg_details in mapping.items():
+                        if msg_details.get("message"):
+                            msg = msg_details["message"]
+                            role = msg.get("author", {}).get("role", "user")
+
+                            create_time = msg.get("create_time")
+                            try:
+                                ts = float(create_time) if create_time is not None else 0.0
+                            except:
+                                ts = 0.0
+
+                            parts = msg.get("content", {}).get("parts", [])
+                            content = "\n".join(str(p) for p in parts if p is not None).strip()
+
+                            if content:
+                                msgs.append({"role": role, "timestamp": ts, "content": content})
+        else:
+            print(f"[!] No conversations found in {conv_dir}.")
+            print(f"    Checked: {single_file} and {conv_path}")
+
     msgs.sort(key=lambda x: x["timestamp"])
     print(f"[i] Found and sorted {len(msgs)} total messages.")
     return msgs

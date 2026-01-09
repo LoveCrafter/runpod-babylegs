@@ -26,12 +26,23 @@ else
     echo "✅ Tailscale is installed."
 fi
 
-# Check Nginx
-if ! command -v nginx &> /dev/null; then
-    echo "⬇️  Nginx not found. Installing..."
-    apt-get update && apt-get install -y nginx
+# Check System Dependencies (Nginx, lsof, cmake, etc.)
+echo "⬇️  Verifying System Dependencies..."
+# We run apt-get update if we detect missing packages to ensure we can install them.
+MISSING_PACKAGES=0
+for pkg in nginx lsof cmake build-essential libcurl4-openssl-dev; do
+    if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+        MISSING_PACKAGES=1
+        break
+    fi
+done
+
+if [ $MISSING_PACKAGES -eq 1 ]; then
+    echo "⬇️  Installing missing system packages..."
+    apt-get update
+    apt-get install -y nginx lsof cmake build-essential libcurl4-openssl-dev
 else
-    echo "✅ Nginx is installed."
+    echo "✅ All system dependencies are installed."
 fi
 
 # --- 2. PYTHON DEPENDENCY STRATEGY (The "Unpinning" Fix) ---
