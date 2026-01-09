@@ -72,6 +72,7 @@ pip install open-webui
 # Priority 2: GGUF (Explicit fix for calculate_context.py)
 echo "📦 Installing GGUF (Priority 2 - Critical Fix)..."
 pip install gguf
+pip install tqdm lancedb orjson sentence-transformers
 
 # Priority 3: Remaining requirements (Unpinned)
 echo "📦 Installing remaining requirements (Unpinned)..."

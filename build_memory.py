@@ -189,8 +189,13 @@ def build_memory_db(state):
     # The lancedb.connect call in AppState implicitly creates the directory.
     # To prevent skipping the build on a first run, we must check for the table's existence.
     if "memory" in state.db.table_names():
-        print("[i] 'memory' table already exists. Skipping build.")
-        return
+        tbl = state.db.open_table("memory")
+        if len(tbl) > 0:
+            print("[i] Memory table exists and is populated. Skipping build.")
+            return
+        else:
+            print("[!] Memory table exists but is empty. Rebuilding...")
+            state.db.drop_table("memory")
 
     print("--- Starting One-Time Memory Build ---")
     if not os.path.isfile(ZIP_PATH):
