@@ -1,0 +1,30 @@
+    1  tailscale up --authkey=$TAILSCALE_AUTH_KEY --hostname=$TAILSCALE_HOSTNAME
+    2  curl -fsSL https://tailscale.com/install.sh | sh
+    3  tailscale up --authkey=$TAILSCALE_AUTH_KEY --hostname=$TAILSCALE_HOSTNAME
+    4  mkdir -p /var/run/tailscale /var/lib/tailscale
+    5  tailscaled --state=/var/lib/tailscale/tailscaled.state --socket=/var/run/tailscale/tailscaled.sock --tun=userspace-networking &
+    6  tailscale up --authkey=$TAILSCALE_AUTH_KEY --hostname=$TAILSCALE_HOSTNAME
+    7  cd /workspace/runpod-babylegs
+    8  git fetch origin
+    9  git reset --hard origin/master
+   10  chmod +x bootstrap_vesper.sh
+   11  ./bootstrap_vesper.sh
+   12  apt-get update && apt-get install -y lsof nginx
+   13  apt-get update && apt-get install -y lsof
+   14  apt-get install -y nginx
+   15  ./start_remote_services.sh --foreground-llm
+   16  apt-get update && apt-get install -y cmake build-essential
+   17  ./start_remote_services.sh --foreground-llm
+   18  apt-get install -y libcurl4-openssl-dev
+   19  ./start_remote_services.sh --foreground-llm
+   20  cat /workspace/rag_server.log
+   21  sed -i '/RAG server timed out/s/exit 1/true/' start_remote_services.sh
+   22  ./start_remote_services.sh --foreground-llm
+   23  ls -lh /workspace/runpod-babylegs/chatgpt_export.zip
+   24  rm -rf memory.lancedb
+   25  python3 build_memory.py
+   26  rm -rf chatgpt_export memory.lancedb
+   27  ./vesper_env/bin/python3 build_memory.py
+   28  find chatgpt_export -name "conversations.json"
+   29  head -c 200 chatgpt_export/conversations.json
+   30  history > /workspace/runpod-babylegs/jan26_session_history.txt
