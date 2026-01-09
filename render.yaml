@@ -3,7 +3,8 @@ services:
     name: vesper
     env: python
     plan: free
-    buildCommand: pip install -r render-requirements.txt
+    # Force CPU-only PyTorch to reduce slug size and prevent build timeouts
+    buildCommand: pip install -r render-requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
     # Reduced workers to 1 to prevent OOM on Free Tier (512MB RAM)
     startCommand: gunicorn -w 1 -k uvicorn.workers.UvicornWorker build_memory:app
     envVars:
