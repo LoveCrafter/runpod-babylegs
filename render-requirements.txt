@@ -25,3 +25,7 @@ typing_extensions==4.15.0
 urllib3==2.5.0
 wheel==0.45.1
 orjson
+fastapi
+uvicorn
+gunicorn
+pydantic

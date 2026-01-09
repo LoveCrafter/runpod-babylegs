@@ -21,7 +21,8 @@ ZIP_PATH         = os.getenv("ZIP_PATH", "chatgpt_export.zip")
 UNZIP_DIR        = os.getenv("UNZIP_DIR", "chatgpt_export")
 LANCEDB_PATH     = os.getenv("LANCEDB_PATH", "memory.lancedb")
 CHUNK_TOKENS     = int(os.getenv("CHUNK_TOKENS", "5500"))
-EMBED_MODEL_NAME = "BAAI/bge-large-en-v1.5"
+# Use env var for model name, default to BGE Large
+EMBED_MODEL_NAME = os.getenv("EMBED_MODEL_NAME", "BAAI/bge-large-en-v1.5")
 EMBED_DEVICE     = os.getenv("RAG_DEVICE", "cuda" if torch.cuda.is_available() else "cpu")
 API_HOST         = "0.0.0.0"
 API_PORT         = int(os.getenv("API_PORT", "5000"))
@@ -118,7 +119,11 @@ def build_memory_db(state):
 
     print("--- Starting One-Time Memory Build ---")
     if not os.path.isfile(ZIP_PATH):
-        sys.exit(f"[✗] ZIP file not found at {ZIP_PATH}. Please upload it.")
+        # CHANGE: Do not crash if zip is missing. Just warn and continue.
+        # This allows the server to start even if no data is present (common in cloud deployments).
+        print(f"[!] ZIP file not found at {ZIP_PATH}. Skipping build step.")
+        print(f"[!] Please upload {ZIP_PATH} to populate memory.")
+        return
 
     unzip_export(ZIP_PATH, UNZIP_DIR)
     messages = build_message_stream(UNZIP_DIR)
@@ -143,6 +148,7 @@ app = FastAPI()
 class AppState:
     def __init__(self):
         print(f"[+] Loading embedding model '{EMBED_MODEL_NAME}'...")
+        # Note: This loads the model into RAM. Ensure enough memory is available.
         self.embedder = SentenceTransformer(EMBED_MODEL_NAME, device=EMBED_DEVICE)
         print("[+] Connecting to LanceDB...")
         self.db = lancedb.connect(LANCEDB_PATH)
@@ -158,7 +164,11 @@ def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = Header(..., descript
     if API_SECRET != "CHANGE_ME" and not secrets.compare_digest(token, API_SECRET):
         raise HTTPException(status_code=403, detail="Invalid API token.")
     if state.table is None:
-        raise HTTPException(status_code=503, detail="Memory DB not built.")
+        # Try to reload table if it was built after startup
+        if "memory" in state.db.table_names():
+            state.table = state.db.open_table("memory")
+        else:
+            raise HTTPException(status_code=503, detail="Memory DB not built.")
 
     query_vector = state.embedder.encode(query, normalize_embeddings=True)
     results = state.table.search(query_vector).limit(k).to_list()
