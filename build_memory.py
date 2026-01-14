@@ -181,7 +181,7 @@ def lookup(query: str, k: int = TOP_K_DEFAULT, token: str = Header(..., descript
             raise HTTPException(status_code=503, detail="Memory DB not built.")
 
     query_vector = state.embedder.encode(query, normalize_embeddings=True)
-    results = state.table.search(query_vector).limit(k).to_list()
+    results = state.table.search(query_vector).limit(max(1, min(k, 20))).to_list()
     return {"query": query, "results": results}
 
 @app.get("/")
