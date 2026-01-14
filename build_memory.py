@@ -72,7 +72,7 @@ def build_message_stream(conv_dir: str):
                     role = msg.get("author", {}).get("role", "user")
                     # Safe timestamp
                     try: ts = float(msg.get("create_time", 0.0) or 0.0)
-                    except: ts = 0.0
+                    except (ValueError, TypeError): ts = 0.0
 
                     parts = msg.get("content", {}).get("parts", [])
                     content = "\n".join([str(p) for p in parts if p]).strip()
