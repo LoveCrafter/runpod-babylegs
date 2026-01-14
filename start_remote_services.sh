@@ -37,6 +37,7 @@ echo "🛡️  VRAM Protection Active: Global GPU Blackout applied. Only privile
 WORKSPACE_DIR="/workspace"
 REPO_DIR="$WORKSPACE_DIR/runpod-babylegs"
 VENV_PATH="$REPO_DIR/vesper_env/bin/activate"
+PYTHON_EXEC="$REPO_DIR/vesper_env/bin/python3"
 CONFIG_FILE="$REPO_DIR/vesper.conf"
 LLAMA_SERVER_PATH="$REPO_DIR/llama.cpp/build/bin/llama-server"
 LLAMA_CPP_DIR="$REPO_DIR/llama.cpp"
@@ -54,6 +55,7 @@ INTERNAL_LLAMA_PORT=8081
 ENABLE_OPENWEBUI="${ENABLE_OPENWEBUI:-false}"
 OPENWEBUI_PORT="${OPENWEBUI_PORT:-3000}"
 OPENWEBUI_DATA_DIR="$WORKSPACE_DIR/open-webui-data"
+ENABLE_RAG="${ENABLE_RAG:-true}"
 
 # --- Log File Configuration ---
 RAG_LOG_FILE="$WORKSPACE_DIR/rag_server.log"
@@ -121,9 +123,24 @@ pre_flight_checks() {
         echo "❌ CRITICAL: Nginx config template not found at $NGINX_CONFIG_TEMPLATE." >&2; all_checks_passed=false
     fi
     source "$CONFIG_FILE"
-    MODEL_PATH_CHECK="${VESPER_MODEL_PATH:-$MODEL_PATH}"
-    if [ ! -f "$MODEL_PATH_CHECK" ]; then
-        echo "❌ CRITICAL: Model file not found at '$MODEL_PATH_CHECK'." >&2; all_checks_passed=false
+
+    # --- Smart Model Discovery ---
+    # 1. Check configured path
+    local configured_model="${VESPER_MODEL_PATH:-$MODEL_PATH}"
+    if [ -f "$configured_model" ]; then
+        MODEL_PATH="$configured_model"
+        echo "✅ Found configured model at: $MODEL_PATH"
+    else
+        echo "⚠️  Configured model not found at '$configured_model'. Searching workspace..."
+        # 2. Search for any GGUF > 20GB in workspace
+        local found_model=$(find "$WORKSPACE_DIR" -maxdepth 4 -name "*.gguf" -size +20G -print -quit)
+        if [ -n "$found_model" ]; then
+            MODEL_PATH="$found_model"
+            echo "🎉 Smart Discovery found existing model: $MODEL_PATH"
+        else
+            echo "❌ CRITICAL: No model file found (checked config and workspace search)." >&2
+            all_checks_passed=false
+        fi
     fi
 
     if [ "$all_checks_passed" = false ]; then
@@ -193,7 +210,9 @@ fi
 echo "--- Unified Remote Service Launcher ---"
 
 source "$CONFIG_FILE"
-MODEL_PATH="${VESPER_MODEL_PATH:-$MODEL_PATH}"
+# Ensure MODEL_PATH is exported if it was updated by pre_flight_checks
+export MODEL_PATH
+
 source "$VENV_PATH"
 
 # --- Dynamic Context Calculation ---
@@ -202,7 +221,8 @@ if [ -f "$CALC_SCRIPT" ]; then
     echo "🧮 Calculating optimal context size based on VRAM..."
     # Run the python script, capturing stdout. Stderr goes to terminal.
     # PRIVILEGED: Needs GPU access to query VRAM via nvidia-smi
-    CALCULATED_CTX=$($PRIVILEGED_GPU_CMD python3 "$CALC_SCRIPT" "$MODEL_PATH")
+    # Use explicit python executable
+    CALCULATED_CTX=$($PRIVILEGED_GPU_CMD "$PYTHON_EXEC" "$CALC_SCRIPT" "$MODEL_PATH")
     RET_CODE=$?
 
     if [ $RET_CODE -eq 0 ] && [[ "$CALCULATED_CTX" =~ ^[0-9]+$ ]]; then
@@ -231,14 +251,17 @@ if [ ! -f "$LLAMA_SERVER_PATH" ]; then
     cd "$LLAMA_CPP_DIR"
     mkdir -p build
     cd build
-    cmake ..
+    # Constraint: Must use -DGGML_CUDA=ON
+    cmake .. -DGGML_CUDA=ON
     cmake --build . --config Release -j$(nproc)
     echo "✅ Compilation complete."
     cd "$REPO_DIR"
 fi
 
 # --- Check and start RAG Memory Server ---
-if is_running $INTERNAL_RAG_PORT; then
+if [ "$ENABLE_RAG" != "true" ]; then
+    echo "⚪ RAG Server disabled via ENABLE_RAG=false. Skipping startup."
+elif is_running $INTERNAL_RAG_PORT; then
     echo "✅ RAG Server is already running on internal port $INTERNAL_RAG_PORT."
 else
     echo "🧠 Starting RAG Server on internal port $INTERNAL_RAG_PORT..."
@@ -254,14 +277,21 @@ else
     export RAG_DEVICE="cpu"
 
     # (Global Blackout applies here automatically)
-    nohup python3 "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
+    # Use explicit python executable
+    nohup "$PYTHON_EXEC" "$RAG_SCRIPT_PATH" > "$RAG_LOG_FILE" 2>&1 &
     echo "⏳ Waiting for RAG server to become healthy..."
     SECONDS=0
+    # Timeout increased to 600s as requested
     while ! is_running $INTERNAL_RAG_PORT; do
-      if [ $SECONDS -ge 30 ]; then echo "❌ RAG server timed out. Check $RAG_LOG_FILE."; exit 1; fi
+      if [ $SECONDS -ge 600 ]; then
+          echo "⚠️  RAG server timed out. Check $RAG_LOG_FILE. Continuing without RAG."
+          break
+      fi
       sleep 1
     done
-    echo "✅ RAG server is healthy!"
+    if is_running $INTERNAL_RAG_PORT; then
+        echo "✅ RAG server is healthy!"
+    fi
 fi
 
 # --- Check and start Main LLM Server ---
