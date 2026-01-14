@@ -27,6 +27,7 @@ This document provides essential instructions for AI agents working with this re
   ```bash
   bash -c "cd /workspace && (git clone https://github.com/LoveCrafter/runpod-babylegs.git || true) && cd runpod-babylegs && git fetch origin && git reset --hard origin/master && chmod +x bootstrap_vesper.sh && ./bootstrap_vesper.sh --foreground-llm && tail -f /dev/null"
   ```
+  *If you see `exec: cd: not found` in RunPod logs, the Docker Command is not being executed through a shell. Ensure it is wrapped with `bash -c` exactly as shown above.*
 
 ### 2.2. Initial Project Setup
 
@@ -67,6 +68,7 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
     - All other requests are forwarded to the `llama-server`.
 - **Configuration Files:**
     - `vesper.conf`: Contains settings for `llama-server` and OpenWebUI. Supports `TAILSCALE_AUTH_KEY` for persistent networking.
+- **Optional RAG Toggle:** Set `ENABLE_RAG=false` in the environment to skip launching the RAG memory server when resources are constrained.
     - `nginx.conf`: The template for the Nginx reverse proxy configuration.
 - **Applying Changes:** To restart all services (e.g., after changing `vesper.conf`), connect to the pod and run `./start_remote_services.sh --restart`.
 

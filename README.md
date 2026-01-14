@@ -16,6 +16,7 @@ For a fully automated "Click-and-Go" experience, you can configure your RunPod i
     bash -c "cd /workspace && (git clone https://github.com/LoveCrafter/runpod-babylegs.git || true) && cd runpod-babylegs && git fetch origin && git reset --hard origin/master && chmod +x bootstrap_vesper.sh && ./bootstrap_vesper.sh --foreground-llm && tail -f /dev/null"
     ```
     *Note: This command handles git cloning, updating, and launching the services. It ensures the container stays running even if the server stops.*
+    *If you see `exec: cd: not found` in your RunPod logs, it means the command is not being executed through a shell. Ensure the Docker Command is exactly wrapped with `bash -c` as shown above.*
 
 ### Manual Setup (Prerequisites on the Remote Pod)
 
@@ -46,6 +47,7 @@ All key parameters for the model are controlled via the `vesper.conf` file. Note
     ./start_remote_services.sh --restart-llm
     ```
     This will safely stop the current server and launch a new one with your updated configuration.
+3.  **Optional RAG Toggle:** Set `ENABLE_RAG=false` in your environment (or in your startup command) to skip launching the RAG memory server. This is useful for resource-constrained environments where you want the LLM only.
 
 ### Launching the Services
 
