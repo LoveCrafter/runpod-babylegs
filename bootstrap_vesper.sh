@@ -23,7 +23,7 @@ for pkg in nginx lsof cmake build-essential libcurl4-openssl-dev; do
     fi
 done
 
-if [ $MISSING_PACKAGES -eq 1 ]; then
+if [ "$MISSING_PACKAGES" -eq 1 ]; then
     echo "⬇️  Installing missing system packages..."
     apt-get update
     apt-get install -y nginx lsof cmake build-essential libcurl4-openssl-dev
