@@ -193,4 +193,7 @@ if __name__ == "__main__":
         build_memory_db(state)
         if state.table is None and "memory" in state.db.table_names():
             state.table = state.db.open_table("memory")
+    if state.rag_enabled and API_SECRET == "CHANGE_ME":
+        print("\n[!!!] WARNING: API_SECRET is set to the default 'CHANGE_ME'.")
+        print("[!!!] Please set a secure secret as an environment variable for protection.\n")
     uvicorn.run(app, host=API_HOST, port=API_PORT)
