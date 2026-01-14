@@ -283,7 +283,7 @@ else
     SECONDS=0
     # Timeout increased to 600s as requested
     while ! is_running $INTERNAL_RAG_PORT; do
-      if [ $SECONDS -ge 600 ]; then
+      if [ "$SECONDS" -ge 600 ]; then
           echo "⚠️  RAG server timed out. Check $RAG_LOG_FILE. Continuing without RAG."
           break
       fi
