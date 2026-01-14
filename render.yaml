@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: vesper
+    env: python
+    plan: free
+    # Force CPU-only PyTorch to reduce slug size and prevent build timeouts
+    buildCommand: pip install -r render-requirements.txt --extra-index-url https://download.pytorch.org/whl/cpu
+    # Reduced workers to 1 to prevent OOM on Free Tier (512MB RAM)
+    startCommand: gunicorn -w 1 -k uvicorn.workers.UvicornWorker build_memory:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
+      - key: ENABLE_RAG
+        value: false
+      # Use a smaller embedding model to fit in Render Free Tier memory limits
+      - key: EMBED_MODEL_NAME
+        value: sentence-transformers/all-MiniLM-L6-v2
