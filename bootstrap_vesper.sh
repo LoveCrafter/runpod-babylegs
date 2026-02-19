@@ -2,7 +2,7 @@
 set -e
 
 # ==============================================================================
-# Vesper Bootstrap Wrapper (Hotfix V3.1)
+# Vesper Bootstrap Wrapper (Hotfix V3.2)
 # ==============================================================================
 
 echo "--- Vesper Bootstrap Sequence Initiated ---"
@@ -54,7 +54,29 @@ if [ -f "$REPO_DIR/requirements.txt" ]; then
     "$VENV_PYTHON" -m pip install -r "$REPO_DIR/requirements.txt"
 fi
 
-# --- 3. EXECUTION HANDOFF ---
-echo "🚀 Phase 3: Handoff to Engine..."
+# --- 3. GEMINI AGENT (JARVIS) INSTALLATION ---
+echo "🤖 Phase 3: Gemini Agent Installation..."
+
+# Node.js check & install (Prerequisite for Gemini CLI)
+if ! command -v node &> /dev/null; then
+    echo "📦 Node.js not found. Installing..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y nodejs
+fi
+
+# Install Gemini CLI via NPM
+if ! command -v gemini &> /dev/null; then
+    echo "🤖 Installing @google/gemini-cli..."
+    npm install -g @google/gemini-cli
+fi
+
+# Set up 'jarvis' alias if not present
+if ! grep -q "alias jarvis=" ~/.bashrc; then
+    echo "alias jarvis='gemini'" >> ~/.bashrc
+    echo "✅ Alias 'jarvis' added to .bashrc"
+fi
+
+# --- 4. EXECUTION HANDOFF ---
+echo "🚀 Phase 4: Handoff to Engine..."
 chmod +x ./start_remote_services.sh
 exec ./start_remote_services.sh "$@"

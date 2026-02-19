@@ -23,4 +23,4 @@ This file serves as the shared context for the Gemini CLI across all Vesper node
 - **Log Location:** Mothership logs are at `/workspace/runpod-babylegs/docs/logs.txt`.
 
 ## Current Objective
-- Establish automated Gemini CLI installation on the Mothership to enable autonomous self-repair and reporting.
+- **COMPLETE:** Establish automated Gemini CLI installation on the Mothership. (Integrated into `bootstrap_vesper.sh` V3.2)

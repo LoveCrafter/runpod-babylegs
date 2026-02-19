@@ -68,6 +68,7 @@ Follow these steps sequentially from the `/workspace` directory on a fresh pod:
     - All other requests are forwarded to the `llama-server`.
 - **Configuration Files:**
     - `vesper.conf`: Contains settings for `llama-server` and OpenWebUI. Supports `TAILSCALE_AUTH_KEY` for persistent networking.
+- **The Gemini Agent (Jarvis):** The pod is equipped with the Gemini CLI (`@google/gemini-cli`), accessible via the `jarvis` or `gemini` command. This enables autonomous system analysis, log interpretation, and self-repair capabilities on the remote instance.
 - **Optional RAG Toggle:** Set `ENABLE_RAG=false` in the environment to skip launching the RAG memory server when resources are constrained.
     - `nginx.conf`: The template for the Nginx reverse proxy configuration.
 - **Applying Changes:** To restart all services (e.g., after changing `vesper.conf`), connect to the pod and run `./start_remote_services.sh --restart`.
